@@ -49,20 +49,10 @@
     }
 
 
-    var fifteen = {
-        Move: {up: -4, left: -1, down: 4, right: 1},
-        order: [],
-        init: function () {
-            for (var i = 1; i < 16; ++i) {
-                fifteen.order.push(i);
-            }
-            fifteen.shuffle(fifteen.order);
-            fifteen.order.push(0);
-            if (!fifteen.solvable(fifteen.order)) {
-                fifteen.swap(0, 1);
-            }
-        },
-        shuffle: function (array) {
+    var fifteen = (function() {
+        var Move =  {up: -4, left: -1, down: 4, right: 1};
+        var order = [];
+        var shuffle =  function (array) {
             var counter = array.length;
 
             // While there are elements in the array
@@ -80,23 +70,26 @@
             }
 
             return array;
-        },
-        getElementIndex: function (elem) {
+        };
+        var getElementIndex = function (elem) {
             for (var i = 0; i < 16; ++i) {
-                if (fifteen.order[i] == elem) {
+                if (order[i] == elem) {
                     return i;
                 }
             }
             return -1;
             // return fifteen.order.indexOf(elem + 0);
-        },
-        getIndexezFromIndex: function (index) {
+        };
+        var getElement = function(index) {
+          return order[index];
+        };
+        var getIndexezFromIndex = function (index) {
             var point = {};
             point.x = index % 4;
             point.y = Math.floor(index / 4);
             return point;
-        },
-        direction: function (startPoint, endPoint) {
+        };
+        var direction = function (startPoint, endPoint) {
             var x = endPoint.x - startPoint.x;
             var y = endPoint.y - startPoint.y;
 
@@ -116,64 +109,64 @@
                     return DOWN;
                 }
             }
-        },
-        _doMagic: function (startPosition, hole, direction) {
+        };
+        var _doMagic = function (startPosition, hole, direction) {
             var distance = Math.abs(hole.x - startPosition.x + hole.y - startPosition.y);
             for (var i = 0; i < distance; ++i) {
-                fifteen.go(opositeDirection(direction));
+                go(opositeDirection(direction));
             }
-        },
+        };
 
-        bigGo: function (direction, startPositionText) {
-            var index = fifteen.getElementIndex(startPositionText);
-            var startPosition = fifteen.getIndexezFromIndex(index);
-            var indexHole = fifteen.getElementIndex(0);
-            var holePoint = fifteen.getIndexezFromIndex(indexHole);
+        var bigGo = function (dir, startPositionText) {
+            var index = getElementIndex(startPositionText);
+            var startPosition = getIndexezFromIndex(index);
+            var indexHole = getElementIndex(0);
+            var holePoint = getIndexezFromIndex(indexHole);
 
-            var toHoleDirection = fifteen.direction(startPosition, holePoint);
-            if (direction === toHoleDirection && toHoleDirection !== NONE) {
-                fifteen._doMagic(startPosition, holePoint, toHoleDirection);
+            var toHoleDirection = direction(startPosition, holePoint);
+            if (dir === toHoleDirection && toHoleDirection !== NONE) {
+                _doMagic(startPosition, holePoint, toHoleDirection);
                 // drawAndCheck();
                 return true;
             }
             return false;
-        },
+        };
 
-        hole: 15,
-        isCompleted: function () {
-            return !this.order.some(function (item, i) {
+        var hole = 15;
+        var isCompleted = function () {
+            return !order.some(function (item, i) {
                 return item > 0 && item - 1 !== i;
             });
-        },
-        _go: function (move) {
+        };
+        var _go = function (move) {
             // console.log(move);
-            var index = this.hole + move;
+            var index = hole + move;
             if (index < 0 || index > 15) {
                 // console.log("not go 1 " + index);
                 return false;
             }
-            if (move === fifteen.Move.left || move === fifteen.Move.right) {
-                if (Math.floor(this.hole / 4) !== Math.floor(index / 4)) {
+            if (move === Move.left || move === Move.right) {
+                if (Math.floor(hole / 4) !== Math.floor(index / 4)) {
                     // console.log("not go 2 " + index);
                     return false;
                 }
             }
-            this.swap(index, this.hole);
-            this.hole = index;
+            swap(index, hole);
+            hole = index;
             return true;
-        },
-        go: function (direction) {
+        };
+        var go = function (direction) {
             if (!direction || direction === NONE) {
                 return false;
             }
-            return this._go(this.Move[direction]);
-        },
-        swap: function (i1, i2) {
-            var t = this.order[i1];
-            this.order[i1] = this.order[i2];
-            this.order[i2] = t;
-        },
-        solvable: function (a) {
+            return _go(Move[direction]);
+        };
+        var swap = function (i1, i2) {
+            var t = order[i1];
+            order[i1] = order[i2];
+            order[i2] = t;
+        };
+        var solvable = function (a) {
             for (var kDisorder = 0, i = 1, len = a.length - 1; i < len; i++) {
                 for (var j = i - 1; j >= 0; j--) {
                     if (a[j] > a[i]) {
@@ -182,8 +175,20 @@
                 }
             }
             return !(kDisorder % 2);
-        }
-    };
+        };
+        var init =  function () {
+            for (var i = 1; i < 16; ++i) {
+                order.push(i);
+            }
+            shuffle(order);
+            order.push(0);
+            if (!solvable(order)) {
+                swap(0, 1);
+            }
+        };
+        return {init : init, go: go, bigGo : bigGo, isCompleted: isCompleted, getElement: getElement};
+
+    })();
     fifteen.init();
 
 
@@ -234,8 +239,9 @@
 
     function draw() {
         for (var i = 0, tile; tile = box.childNodes[i], i < 16; i++) {
-            tile.textContent = fifteen.order[i];
-            tile.style.visibility = fifteen.order[i] ? 'visible' : 'hidden';
+            var val = fifteen.getElement(i);
+            tile.textContent = val;
+            tile.style.visibility = val ? 'visible' : 'hidden';
         }
     }
 
