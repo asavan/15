@@ -73,7 +73,7 @@
         };
         var getElementIndex = function (elem) {
             for (var i = 0; i < 16; ++i) {
-                if (order[i] == elem) {
+                if (order[i] === parseInt(elem)) {
                     return i;
                 }
             }
