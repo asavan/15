@@ -89,26 +89,14 @@
             point.y = Math.floor(index / 4);
             return point;
         };
+
         var direction = function (startPoint, endPoint) {
             var x = endPoint.x - startPoint.x;
             var y = endPoint.y - startPoint.y;
-
-            if (Math.abs(x) > 0 && Math.abs(y) > 0) {
+            if (x !== 0 && y !== 0) {
                 return NONE;
             }
-            if (Math.abs(x) > 0) {
-                if (x < 0) {
-                    return LEFT;
-                } else {
-                    return RIGHT;
-                }
-            } else {
-                if (y < 0) {
-                    return UP;
-                } else {
-                    return DOWN;
-                }
-            }
+            return calculateDirection(startPoint, endPoint, 1);
         };
         var _doMagic = function (startPosition, hole, direction) {
             var distance = Math.abs(hole.x - startPosition.x + hole.y - startPosition.y);
@@ -176,7 +164,8 @@
             }
             return !(kDisorder % 2);
         };
-        var init =  function () {
+        var reinit =  function () {
+            order = [];
             for (var i = 1; i < 16; ++i) {
                 order.push(i);
             }
@@ -186,11 +175,10 @@
                 swap(0, 1);
             }
         };
-        return {init : init, go: go, bigGo : bigGo, isCompleted: isCompleted, getElement: getElement};
+        reinit();
+        return {reinit : reinit, go: go, bigGo : bigGo, isCompleted: isCompleted, getElement: getElement};
 
     })();
-    fifteen.init();
-
 
     var ongoingTouches = [];
     var startPositionText = "";
