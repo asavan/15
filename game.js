@@ -5,7 +5,7 @@
         RIGHT = "right",
         UP = "up",
         DOWN = "down",
-        NONE = "none";
+        NONE = "";
 
     function calculateDirection(startPoint, endPoint, treshhold) {
 
@@ -50,7 +50,21 @@
 
 
     var fifteen = (function() {
-        var Move =  {up: -4, left: -1, down: 4, right: 1};
+        var getIndexDiff = function (direction) {
+             if (direction === UP ) {
+                 return -4;
+             }
+             if (direction === DOWN) {
+                 return 4;
+             }
+             if (direction === LEFT) {
+                 return -1;
+             }
+             if (direction === RIGHT) {
+                 return 1;
+             }
+             return 0;
+        };
         var order = [];
         var shuffle =  function (array) {
             var counter = array.length;
@@ -114,7 +128,6 @@
             var toHoleDirection = direction(startPosition, holePoint);
             if (dir === toHoleDirection && toHoleDirection !== NONE) {
                 _doMagic(startPosition, holePoint, toHoleDirection);
-                // drawAndCheck();
                 return true;
             }
             return false;
@@ -126,14 +139,13 @@
                 return item > 0 && item - 1 !== i;
             });
         };
-        var _go = function (move) {
-            // console.log(move);
-            var index = hole + move;
+        var _go = function (direction) {
+            var index = hole + getIndexDiff(direction);
             if (index < 0 || index > 15) {
                 // console.log("not go 1 " + index);
                 return false;
             }
-            if (move === Move.left || move === Move.right) {
+            if (direction === LEFT || direction === RIGHT) {
                 if (Math.floor(hole / 4) !== Math.floor(index / 4)) {
                     // console.log("not go 2 " + index);
                     return false;
@@ -147,7 +159,7 @@
             if (!direction || direction === NONE) {
                 return false;
             }
-            return _go(Move[direction]);
+            return _go(direction);
         };
         var swap = function (i1, i2) {
             var t = order[i1];
@@ -176,7 +188,7 @@
             }
         };
         reinit();
-        return {reinit : reinit, go: go, bigGo : bigGo, isCompleted: isCompleted, getElement: getElement};
+        return {go: go, bigGo : bigGo, isCompleted: isCompleted, getElement: getElement};
 
     })();
 
@@ -198,16 +210,49 @@
         return point;
     }
 
-    function handleStart(evt) {
+
+    var box = document.body.appendChild(document.createElement('div'));
+    for (var i = 0; i < 16; i++) box.appendChild(document.createElement('div'));
+
+
+    var draw = function () {
+        for (var i = 0, tile; tile = box.childNodes[i], i < 16; i++) {
+            var val = fifteen.getElement(i);
+            tile.textContent = val;
+            tile.style.visibility = val ? 'visible' : 'hidden';
+        }
+    };
+
+    var drawAndCheck = function() {
+        draw();
+        if (fifteen.isCompleted()) {
+            box.style.backgroundColor = "red";
+            window.removeEventListener('keydown', onKeyPress);
+            box.removeEventListener("touchstart", handleStart);
+            box.removeEventListener("touchend", handleEnd);
+        }
+    };
+
+
+    var onKeyPress = function (e) {
+        var keyKodeToDirection = function (keyCode) {
+            return {39: LEFT, 37: RIGHT, 40: UP, 38: DOWN}[keyCode];
+        };
+        if (fifteen.go(keyKodeToDirection(e.keyCode))) {
+            drawAndCheck();
+        }
+    };
+
+    var handleStart = function(evt) {
         evt.preventDefault();
         startPositionText = evt.target.outerText;
 
         var touches = evt.changedTouches;
         var start = pointFromTouch(touches[0]);
         ongoingTouches.push(start);
-    }
+    };
 
-    function handleEnd(evt) {
+    var handleEnd = function(evt) {
         evt.preventDefault();
         var touches = evt.changedTouches;
 
@@ -219,38 +264,7 @@
             drawAndCheck();
         }
         ongoingTouches = [];
-    }
-
-    var box = document.body.appendChild(document.createElement('div'));
-    for (var i = 0; i < 16; i++) box.appendChild(document.createElement('div'));
-
-
-    function draw() {
-        for (var i = 0, tile; tile = box.childNodes[i], i < 16; i++) {
-            var val = fifteen.getElement(i);
-            tile.textContent = val;
-            tile.style.visibility = val ? 'visible' : 'hidden';
-        }
-    }
-
-    var onKeyPress = function (e) {
-        var keyKodeToDirection = function (keyCode) {
-            return {39: 'left', 37: 'right', 40: 'up', 38: 'down'}[keyCode];
-        };
-        if (fifteen.go(keyKodeToDirection(e.keyCode))) {
-            drawAndCheck();
-        }
     };
-
-    function drawAndCheck() {
-        draw();
-        if (fifteen.isCompleted()) {
-            box.style.backgroundColor = "red";
-            window.removeEventListener('keydown', onKeyPress);
-            box.removeEventListener("touchstart", handleStart);
-            box.removeEventListener("touchend", handleEnd);
-        }
-    }
 
     window.addEventListener('keydown', onKeyPress);
 
