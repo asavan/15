@@ -87,7 +87,7 @@
         };
         var getElementIndex = function (elem) {
             for (var i = 0; i < 16; ++i) {
-                if (order[i] === parseInt(elem)) {
+                if (order[i] === +elem) {
                     return i;
                 }
             }
@@ -210,49 +210,16 @@
         return point;
     }
 
-
-    var box = document.body.appendChild(document.createElement('div'));
-    for (var i = 0; i < 16; i++) box.appendChild(document.createElement('div'));
-
-
-    var draw = function () {
-        for (var i = 0, tile; tile = box.childNodes[i], i < 16; i++) {
-            var val = fifteen.getElement(i);
-            tile.textContent = val;
-            tile.style.visibility = val ? 'visible' : 'hidden';
-        }
-    };
-
-    var drawAndCheck = function() {
-        draw();
-        if (fifteen.isCompleted()) {
-            box.style.backgroundColor = "red";
-            window.removeEventListener('keydown', onKeyPress);
-            box.removeEventListener("touchstart", handleStart);
-            box.removeEventListener("touchend", handleEnd);
-        }
-    };
-
-
-    var onKeyPress = function (e) {
-        var keyKodeToDirection = function (keyCode) {
-            return {39: LEFT, 37: RIGHT, 40: UP, 38: DOWN}[keyCode];
-        };
-        if (fifteen.go(keyKodeToDirection(e.keyCode))) {
-            drawAndCheck();
-        }
-    };
-
-    var handleStart = function(evt) {
+    function handleStart(evt) {
         evt.preventDefault();
         startPositionText = evt.target.outerText;
 
         var touches = evt.changedTouches;
         var start = pointFromTouch(touches[0]);
         ongoingTouches.push(start);
-    };
+    }
 
-    var handleEnd = function(evt) {
+    function handleEnd(evt) {
         evt.preventDefault();
         var touches = evt.changedTouches;
 
@@ -264,11 +231,40 @@
             drawAndCheck();
         }
         ongoingTouches = [];
-    };
+    }
+
+    var box = document.body.appendChild(document.createElement('div'));
+    for (var i = 0; i < 16; i++) box.appendChild(document.createElement('div'));
+
+
+    function draw() {
+        for (var i = 0, tile; tile = box.childNodes[i], i < 16; i++) {
+            var val = fifteen.getElement(i);
+            tile.textContent = val;
+            tile.style.visibility = val ? 'visible' : 'hidden';
+        }
+    }
+
+    function drawAndCheck() {
+        draw();
+        if (fifteen.isCompleted()) {
+            box.style.backgroundColor = "red";
+            window.removeEventListener('keydown', onKeyPress);
+            box.removeEventListener("touchstart", handleStart);
+            box.removeEventListener("touchend", handleEnd);
+        }
+    }
+
+    function onKeyPress (e) {
+        var keyKodeToDirection = function (keyCode) {
+            return {39: LEFT, 37: RIGHT, 40: UP, 38: DOWN}[keyCode];
+        };
+        if (fifteen.go(keyKodeToDirection(e.keyCode))) {
+            drawAndCheck();
+        }
+    }
 
     window.addEventListener('keydown', onKeyPress);
-
-    // box.addEventListener("touchmove", handleMove, false);
     box.addEventListener("touchstart", handleStart, false);
     box.addEventListener("touchend", handleEnd, false);
 
