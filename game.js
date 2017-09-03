@@ -252,6 +252,7 @@
             window.removeEventListener('keydown', onKeyPress);
             box.removeEventListener("touchstart", handleStart);
             box.removeEventListener("touchend", handleEnd);
+			navigator.vibrate(200);
         }
     }
 
