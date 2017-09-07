@@ -52,16 +52,16 @@
     var fifteen = (function() {
         var getIndexDiff = function (direction) {
              if (direction === UP ) {
-                 return -4;
-             }
-             if (direction === DOWN) {
                  return 4;
              }
+             if (direction === DOWN) {
+                 return -4;
+             }
              if (direction === LEFT) {
-                 return -1;
+                 return 1;
              }
              if (direction === RIGHT) {
-                 return 1;
+                 return -1;
              }
              return 0;
         };
@@ -115,7 +115,7 @@
         var _doMagic = function (startPosition, hole, direction) {
             var distance = Math.abs(hole.x - startPosition.x + hole.y - startPosition.y);
             for (var i = 0; i < distance; ++i) {
-                go(opositeDirection(direction));
+                go(direction);
             }
         };
 
@@ -234,7 +234,7 @@
     }
 
     var box = document.body.appendChild(document.createElement('div'));
-	box.className = "box"
+	box.className = "box";
     for (var i = 0; i < 16; i++) box.appendChild(document.createElement('div'));
 
 
@@ -250,16 +250,33 @@
         draw();
         if (fifteen.isCompleted()) {
             box.style.backgroundColor = "red";
-            window.removeEventListener('keydown', onKeyPress);
+            window.removeEventListener('keydown', onKeyPress,  {passive: true});
             box.removeEventListener("touchstart", handleStart);
             box.removeEventListener("touchend", handleEnd);
-			navigator.vibrate(200);
+			navigator.vibrate([500, 200, 500]);
         }
     }
 
-    function onKeyPress (e) {
+    function onKeyPress(e) {
+        // e.preventDefault();
         var keyKodeToDirection = function (keyCode) {
-            return {39: LEFT, 37: RIGHT, 40: UP, 38: DOWN}[keyCode];
+            log(keyCode);
+            switch (keyCode) {
+                case 37:
+                case 72:
+                    return LEFT;
+                case 39:
+                case 76:
+                    return RIGHT;
+                case 38:
+                case 75:
+                    return UP;
+                case 40:
+                case 74:
+                    return DOWN;
+                default:
+                    return NONE;
+            }
         };
         if (fifteen.go(keyKodeToDirection(e.keyCode))) {
             drawAndCheck();
