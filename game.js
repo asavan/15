@@ -234,6 +234,7 @@
     }
 
     var box = document.body.appendChild(document.createElement('div'));
+	box.className = "box"
     for (var i = 0; i < 16; i++) box.appendChild(document.createElement('div'));
 
 
