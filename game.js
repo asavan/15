@@ -250,7 +250,7 @@
         draw();
         if (fifteen.isCompleted()) {
             box.style.backgroundColor = "red";
-            window.removeEventListener('keydown', onKeyPress,  {passive: true});
+            window.removeEventListener('keydown', onKeyPress);
             box.removeEventListener("touchstart", handleStart);
             box.removeEventListener("touchend", handleEnd);
 			navigator.vibrate([500, 200, 500]);
@@ -283,7 +283,7 @@
         }
     }
 
-    window.addEventListener('keydown', onKeyPress);
+    window.addEventListener('keydown', onKeyPress, {passive: true});
     box.addEventListener("touchstart", handleStart, false);
     box.addEventListener("touchend", handleEnd, false);
 

@@ -1,4 +1,4 @@
-var version = "0.0.3"
+var version = "0.0.5"
 var CACHE = 'cache-only';
 
 function fromCache(request) {
@@ -30,5 +30,4 @@ self.addEventListener('fetch', function(evt) {
         return fetch(evt.request);
   }));
 });
-
 
