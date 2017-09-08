@@ -220,6 +220,9 @@
     }
 
     function handleEnd(evt) {
+		if (ongoingTouches.length < 1) {
+			return;
+		}
         evt.preventDefault();
         var touches = evt.changedTouches;
 
@@ -283,7 +286,7 @@
         }
     }
 
-    window.addEventListener('keydown', onKeyPress, {passive: true});
+    window.addEventListener('keydown', onKeyPress);
     box.addEventListener("touchstart", handleStart, false);
     box.addEventListener("touchend", handleEnd, false);
 

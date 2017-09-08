@@ -1,4 +1,4 @@
-var version = "0.0.5"
+var version = "0.1.0"
 var CACHE = 'cache-only';
 
 function fromCache(request) {
@@ -14,6 +14,7 @@ function precache() {
     return cache.addAll([
       './',
       './game.js',
+	  './gamepad.js',
 	  './game.css'
     ]);
   });
