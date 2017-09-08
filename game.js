@@ -210,16 +210,16 @@
         return point;
     }
 
-    function handleStart(evt) {
+    var handleStart = function (evt) {
         evt.preventDefault();
-        startPositionText = evt.target.outerText;
+        startPositionText = evt.target.textContent;
 
         var touches = evt.changedTouches;
         var start = pointFromTouch(touches[0]);
         ongoingTouches.push(start);
-    }
+    };
 
-    function handleEnd(evt) {
+    var handleEnd = function(evt) {
 		if (ongoingTouches.length < 1) {
 			return;
 		}
@@ -234,7 +234,7 @@
             drawAndCheck();
         }
         ongoingTouches = [];
-    }
+    };
 
     var box = document.body.appendChild(document.createElement('div'));
 	box.className = "box";

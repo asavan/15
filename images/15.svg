@@ -1,0 +1,8 @@
+<svg width="200" height="200" xmlns="http://www.w3.org/2000/svg">
+<g>
+  <title>Layer 1</title>
+  <rect stroke="#000" id="svg_3" height="200" width="200" y="0" x="0" fill="#0fffff"/>
+  <circle stroke="#00ffff" r="80" id="svg_4" cy="100" cx="100" stroke-width="1.5" fill="#19c6c6"/>
+  <text stroke="#000" text-anchor="start" font-family="Georgia, Times, 'Times New Roman', serif" font-size="120" id="svg_5" y="120" x="40" stroke-opacity="null" stroke-width="0" fill="#ffffff">15</text>
+ </g>
+</svg>
