@@ -1,4 +1,30 @@
 (function (window, document) {
+    var BUTTONS = {
+        FACE_1: 0, // Face (main) buttons
+            FACE_2: 1,
+            FACE_3: 2,
+            FACE_4: 3,
+            LEFT_SHOULDER: 4, // Top shoulder buttons
+            RIGHT_SHOULDER: 5,
+            LEFT_SHOULDER_BOTTOM: 6, // Bottom shoulder buttons
+            RIGHT_SHOULDER_BOTTOM: 7,
+            SELECT: 8,
+            START: 9,
+            LEFT_ANALOGUE_STICK: 10, // Analogue sticks (if depressible)
+            RIGHT_ANALOGUE_STICK: 11,
+            PAD_TOP: 12, // Directional (discrete) pad
+            PAD_BOTTOM: 13,
+            PAD_LEFT: 14,
+            PAD_RIGHT: 15
+    };
+
+    var AXES= {
+        LEFT_ANALOGUE_HOR: 0,
+            LEFT_ANALOGUE_VERT: 1,
+            RIGHT_ANALOGUE_HOR: 2,
+            RIGHT_ANALOGUE_VERT: 3
+    };
+
     var gamepadSupport = {
 
         directions: {
@@ -16,31 +42,6 @@
             restart: 84
         },
 
-        BUTTONS: {
-            FACE_1: 0, // Face (main) buttons
-            FACE_2: 1,
-            FACE_3: 2,
-            FACE_4: 3,
-            LEFT_SHOULDER: 4, // Top shoulder buttons
-            RIGHT_SHOULDER: 5,
-            LEFT_SHOULDER_BOTTOM: 6, // Bottom shoulder buttons
-            RIGHT_SHOULDER_BOTTOM: 7,
-            SELECT: 8,
-            START: 9,
-            LEFT_ANALOGUE_STICK: 10, // Analogue sticks (if depressible)
-            RIGHT_ANALOGUE_STICK: 11,
-            PAD_TOP: 12, // Directional (discrete) pad
-            PAD_BOTTOM: 13,
-            PAD_LEFT: 14,
-            PAD_RIGHT: 15
-        },
-
-        AXES: {
-            LEFT_ANALOGUE_HOR: 0,
-            LEFT_ANALOGUE_VERT: 1,
-            RIGHT_ANALOGUE_HOR: 2,
-            RIGHT_ANALOGUE_VERT: 3
-        },
 
         AXIS_THRESHOLD: .75,
 
@@ -218,27 +219,27 @@
 
         updateDisplay: function (gamepad) {
             var state;
-            var vibrControllers = gamepad.hapticActuators;
-            if (vibrControllers && vibrControllers[0]) {
-                vibrControllers[0].pulse(1, 200);
-            }
-            if (gamepadSupport.buttonPressed_(gamepad, gamepadSupport.BUTTONS.PAD_LEFT) ||
-                gamepadSupport.stickMoved_(gamepad, gamepadSupport.AXES.LEFT_ANALOGUE_HOR, true) ||
-                gamepadSupport.stickMoved_(gamepad, gamepadSupport.AXES.RIGHT_ANALOGUE_HOR, true)) {
+            // var vibrControllers = gamepad.hapticActuators;
+            // if (vibrControllers && vibrControllers[0]) {
+            //     vibrControllers[0].pulse(1, 200);
+            // }
+            if (gamepadSupport.buttonPressed_(gamepad, BUTTONS.PAD_LEFT) ||
+                gamepadSupport.stickMoved_(gamepad, AXES.LEFT_ANALOGUE_HOR, true) ||
+                gamepadSupport.stickMoved_(gamepad, AXES.RIGHT_ANALOGUE_HOR, true)) {
                 state = gamepadSupport.directions.LEFT;
-            } else if (gamepadSupport.buttonPressed_(gamepad, gamepadSupport.BUTTONS.PAD_RIGHT) ||
-                gamepadSupport.stickMoved_(gamepad, gamepadSupport.AXES.LEFT_ANALOGUE_HOR, false) ||
-                gamepadSupport.stickMoved_(gamepad, gamepadSupport.AXES.RIGHT_ANALOGUE_HOR, false)) {
+            } else if (gamepadSupport.buttonPressed_(gamepad, BUTTONS.PAD_RIGHT) ||
+                gamepadSupport.stickMoved_(gamepad, AXES.LEFT_ANALOGUE_HOR, false) ||
+                gamepadSupport.stickMoved_(gamepad, AXES.RIGHT_ANALOGUE_HOR, false)) {
                 state = gamepadSupport.directions.RIGHT;
-            } else if (gamepadSupport.buttonPressed_(gamepad, gamepadSupport.BUTTONS.PAD_BOTTOM) ||
-                gamepadSupport.stickMoved_(gamepad, gamepadSupport.AXES.LEFT_ANALOGUE_VERT, false) ||
-                gamepadSupport.stickMoved_(gamepad, gamepadSupport.AXES.RIGHT_ANALOGUE_VERT, false)) {
+            } else if (gamepadSupport.buttonPressed_(gamepad, BUTTONS.PAD_BOTTOM) ||
+                gamepadSupport.stickMoved_(gamepad, AXES.LEFT_ANALOGUE_VERT, false) ||
+                gamepadSupport.stickMoved_(gamepad, AXES.RIGHT_ANALOGUE_VERT, false)) {
                 state = gamepadSupport.directions.DOWN;
-            } else if (gamepadSupport.buttonPressed_(gamepad, gamepadSupport.BUTTONS.PAD_TOP) ||
-                gamepadSupport.stickMoved_(gamepad, gamepadSupport.AXES.LEFT_ANALOGUE_VERT, true) ||
-                gamepadSupport.stickMoved_(gamepad, gamepadSupport.AXES.RIGHT_ANALOGUE_VERT, true)) {
+            } else if (gamepadSupport.buttonPressed_(gamepad, BUTTONS.PAD_TOP) ||
+                gamepadSupport.stickMoved_(gamepad, AXES.LEFT_ANALOGUE_VERT, true) ||
+                gamepadSupport.stickMoved_(gamepad, AXES.RIGHT_ANALOGUE_VERT, true)) {
                 state = gamepadSupport.directions.UP;
-            } else if (gamepad.buttons[gamepadSupport.BUTTONS.START].pressed) {
+            } else if (gamepad.buttons[BUTTONS.START].pressed) {
                 document.location.reload();
                 return;
             } else {

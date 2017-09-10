@@ -263,7 +263,6 @@
     function onKeyPress(e) {
         // e.preventDefault();
         var keyKodeToDirection = function (keyCode) {
-            log(keyCode);
             switch (keyCode) {
                 case 37:
                 case 72:
