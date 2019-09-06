@@ -160,12 +160,13 @@
 			for (var i = 1; i < 16; ++i) {
                 order.push(i);
             }
-            shuffle(order);
+            // shuffle(order);
             order.push(0);
             hole = 15;
-            if (!solvable(order)) {
-                swap(0, 1);
-            }
+            // if (!solvable(order)) {
+               // swap(0, 1);
+            // }
+			swap(15, 16);
         };
         var getMovesCount = function () {
             return movesCount;
@@ -296,10 +297,45 @@
             drawAndCheck();
         }
     }
+	
+	function handleOrientation(event) {
+  var x = event.beta;  // In degree in the range [-180,180]
+  var y = event.gamma; // In degree in the range [-90,90]
+
+  console.log( "beta : " + x + "\n");
+  console.log( "gamma: " + y + "\n");
+
+  // Because we don't want to have the device upside down
+  // We constrain the x value to the range [-90,90]
+  if (x >  90) { x =  90};
+  if (x < -90) { x = -90};
+
+  // To make computation easier we shift the range of 
+  // x and y to [0,180]
+  x += 90;
+  y += 90;
+
+  console.log( "beta : " + x + "\n");
+  console.log( "gamma: " + y + "\n");
+  if (x > 40) {
+	  fifteen.bigGo(RIGHT, 0);
+	  fifteen.bigGo(RIGHT, 4);
+	  fifteen.bigGo(RIGHT, 8);
+	  fifteen.bigGo(RIGHT, 12);
+  }
+  if (x < -40) {
+	  fifteen.bigGo(LEFT, 3);
+	  fifteen.bigGo(RIGHT, 7);
+	  fifteen.bigGo(RIGHT, 11);
+	  fifteen.bigGo(RIGHT, 15);
+  }
+}
 
     window.addEventListener('keydown', onKeyPress);
     box.addEventListener("touchstart", handleStart, false);
     box.addEventListener("touchend", handleEnd, false);
+	window.addEventListener('deviceorientation', handleOrientation);
+	
 
     drawAndCheck();
 })(window, document);
