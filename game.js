@@ -166,11 +166,12 @@
             // if (!solvable(order)) {
                // swap(0, 1);
             // }
-			swap(15, 16);
+			swap(14, 15);
+            hole = 14;
         };
         var getMovesCount = function () {
             return movesCount;
-        }
+        };
         reinit();
         return {go: go, bigGo : bigGo, isCompleted: isCompleted, getElement: getElement, getMovesCount: getMovesCount};
 
