@@ -156,15 +156,13 @@
         };
         var reinit =  function () {
             movesCount = 0;
-            order = [];
-            for (var i = 1; i < 15; ++i) {
+            order = [];            
+			for (var i = 1; i < 16; ++i) {
                 order.push(i);
             }
-
+            shuffle(order);
             order.push(0);
-            hole = 14;
-            order.push(15);
-			shuffle(order);
+            hole = 15;
             if (!solvable(order)) {
                 swap(0, 1);
             }
