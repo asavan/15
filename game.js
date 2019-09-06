@@ -7,9 +7,12 @@
         DOWN = "down",
         NONE = "";
 
-    function calculateDirection(startPoint, endPoint, treshhold) {
+    var SPARTAK = [300,200,300,200,150,100,150,100,150,300,100,100,100,100,150,100,200,300,120,130,120,300];
+    var MORTAL = [100, 200, 100, 200, 100, 200, 100, 200, 100, 100, 100, 100, 100, 200, 100, 200, 100, 200, 100, 200, 100, 100, 100, 100, 100, 200, 100, 200, 100, 200, 100, 200, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 50, 50, 100, 800];
+    var IMPERIAL = [500,110,500,110,450,110,200,110,170,40,450,110,200,110,170,40,500];
+    function calculateDirection(startPoint, endPoint, threshold) {
 
-        var tr = treshhold || 30;
+        var tr = threshold || 30;
         var x = endPoint.x - startPoint.x;
         var y = endPoint.y - startPoint.y;
 
@@ -32,23 +35,6 @@
         }
     }
 
-    function opositeDirection(direction) {
-        if (direction === LEFT) {
-            return RIGHT;
-        }
-        if (direction === RIGHT) {
-            return LEFT;
-        }
-        if (direction === UP) {
-            return DOWN;
-        }
-        if (direction === DOWN) {
-            return UP;
-        }
-        return NONE;
-    }
-
-
     var fifteen = (function() {
         var getIndexDiff = function (direction) {
              if (direction === UP ) {
@@ -66,7 +52,11 @@
              return 0;
         };
         var order = [];
-        var shuffle =  function (array) {
+        var movesCount = 0;
+        var getElement = function(index) {
+          return order[index];
+        };
+		var shuffle =  function (array) {
             var counter = array.length;
 
             // While there are elements in the array
@@ -85,19 +75,8 @@
 
             return array;
         };
-        var getElementIndex = function (elem) {
-            for (var i = 0; i < 16; ++i) {
-                if (order[i] === +elem) {
-                    return i;
-                }
-            }
-            return -1;
-            // return fifteen.order.indexOf(elem + 0);
-        };
-        var getElement = function(index) {
-          return order[index];
-        };
-        var getIndexezFromIndex = function (index) {
+
+        var getIndexesFromIndex = function (index) {
             var point = {};
             point.x = index % 4;
             point.y = Math.floor(index / 4);
@@ -114,21 +93,20 @@
         };
         var _doMagic = function (startPosition, hole, direction) {
             var distance = Math.abs(hole.x - startPosition.x + hole.y - startPosition.y);
+            var res = false;
             for (var i = 0; i < distance; ++i) {
-                go(direction);
+                res |= _go(direction);
             }
+            if (res) ++movesCount;
+            return res;
         };
 
-        var bigGo = function (dir, startPositionText) {
-            var index = getElementIndex(startPositionText);
-            var startPosition = getIndexezFromIndex(index);
-            var indexHole = getElementIndex(0);
-            var holePoint = getIndexezFromIndex(indexHole);
-
+        var bigGo = function (dir, index) {
+            var startPosition = getIndexesFromIndex(index);
+            var holePoint = getIndexesFromIndex(hole);
             var toHoleDirection = direction(startPosition, holePoint);
             if (dir === toHoleDirection && toHoleDirection !== NONE) {
-                _doMagic(startPosition, holePoint, toHoleDirection);
-                return true;
+                return _doMagic(startPosition, holePoint, toHoleDirection);
             }
             return false;
         };
@@ -140,14 +118,15 @@
             });
         };
         var _go = function (direction) {
+            if (!direction || direction === NONE) {
+                return false;
+            }
             var index = hole + getIndexDiff(direction);
             if (index < 0 || index > 15) {
-                // console.log("not go 1 " + index);
                 return false;
             }
             if (direction === LEFT || direction === RIGHT) {
                 if (Math.floor(hole / 4) !== Math.floor(index / 4)) {
-                    // console.log("not go 2 " + index);
                     return false;
                 }
             }
@@ -156,10 +135,9 @@
             return true;
         };
         var go = function (direction) {
-            if (!direction || direction === NONE) {
-                return false;
-            }
-            return _go(direction);
+            var res = _go(direction);
+            if (res) ++movesCount;
+            return res;
         };
         var swap = function (i1, i2) {
             var t = order[i1];
@@ -177,18 +155,25 @@
             return !(kDisorder % 2);
         };
         var reinit =  function () {
+            movesCount = 0;
             order = [];
-            for (var i = 1; i < 16; ++i) {
+            for (var i = 1; i < 15; ++i) {
                 order.push(i);
             }
-            shuffle(order);
+
             order.push(0);
+            hole = 14;
+            order.push(15);
+			shuffle(order);
             if (!solvable(order)) {
                 swap(0, 1);
             }
         };
+        var getMovesCount = function () {
+            return movesCount;
+        }
         reinit();
-        return {go: go, bigGo : bigGo, isCompleted: isCompleted, getElement: getElement};
+        return {go: go, bigGo : bigGo, isCompleted: isCompleted, getElement: getElement, getMovesCount: getMovesCount};
 
     })();
 
@@ -211,7 +196,7 @@
     }
 
     var handleStart = function (evt) {
-        evt.preventDefault();
+        // evt.preventDefault();
         startPositionText = evt.target.textContent;
 
         var touches = evt.changedTouches;
@@ -219,26 +204,51 @@
         ongoingTouches.push(start);
     };
 
+    var getElementIndex = function (elem) {
+        for (var i = 0; i < 16; ++i) {
+            if (fifteen.getElement(i) === +elem) {
+                return i;
+            }
+        }
+        return -1;
+    };
+
     var handleEnd = function(evt) {
 		if (ongoingTouches.length < 1) {
 			return;
 		}
-        evt.preventDefault();
+        // evt.preventDefault();
         var touches = evt.changedTouches;
 
         var end = pointFromTouch(touches[touches.length - 1]);
         var start = ongoingTouches[0];
 
         var direction = calculateDirection(start, end);
-        if (fifteen.bigGo(direction, startPositionText)) {
+        if (fifteen.bigGo(direction, getElementIndex(startPositionText))) {
             drawAndCheck();
         }
         ongoingTouches = [];
     };
 
+
     var box = document.body.appendChild(document.createElement('div'));
 	box.className = "box";
-    for (var i = 0; i < 16; i++) box.appendChild(document.createElement('div'));
+    for (var i = 0; i < 16; i++) {
+        var cell = document.createElement('div');
+        box.appendChild(cell);
+        if (i === 12) {
+            cell.addEventListener("click", function() {
+                var res = navigator.vibrate(IMPERIAL);
+                console.log(res);
+            });
+        }
+    }
+
+    var canvas = document.createElement('canvas'),
+        link = document.getElementById('favicon');
+          canvas.height = canvas.width = 16; // set the size
+      var ctx = canvas.getContext('2d');
+      ctx.fillStyle = '#000';
 
 
     function draw() {
@@ -247,16 +257,20 @@
             tile.textContent = val;
             tile.style.visibility = val ? 'visible' : 'hidden';
         }
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.fillText(fifteen.getMovesCount(), 2, 12);
+        link.href = canvas.toDataURL('image/png');
     }
 
     function drawAndCheck() {
         draw();
         if (fifteen.isCompleted()) {
             box.style.backgroundColor = "red";
-            window.removeEventListener('keydown', onKeyPress);
-            box.removeEventListener("touchstart", handleStart);
-            box.removeEventListener("touchend", handleEnd);
-			navigator.vibrate([500, 200, 500]);
+            navigator.vibrate(0);
+			navigator.vibrate(SPARTAK);
+        } else {
+            navigator.vibrate(0);
+            box.style.backgroundColor = "";
         }
     }
 
