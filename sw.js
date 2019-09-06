@@ -1,4 +1,4 @@
-var version = "0.1.2"
+var version = "0.1.3"
 var CACHE = 'cache-only';
 
 function fromCache(request) {
@@ -16,6 +16,7 @@ function precache() {
       './game.js',
 	  './gamepad.js',
 	  './game.css'
+	  './images/15-front.png'
     ]);
   });
 }
