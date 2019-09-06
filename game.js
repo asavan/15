@@ -7,9 +7,10 @@
         DOWN = "down",
         NONE = "";
 
-    var SPARTAK = [300,200,300,200,150,100,150,100,150,300,100,100,100,100,150,100,200,300,120,130,120,300];
+    var SPARTAK = [300, 200, 300, 200, 150, 100, 150, 100, 150, 300, 100, 100, 100, 100, 150, 100, 200, 300, 120, 130, 120, 300];
     var MORTAL = [100, 200, 100, 200, 100, 200, 100, 200, 100, 100, 100, 100, 100, 200, 100, 200, 100, 200, 100, 200, 100, 100, 100, 100, 100, 200, 100, 200, 100, 200, 100, 200, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 50, 50, 100, 800];
-    var IMPERIAL = [500,110,500,110,450,110,200,110,170,40,450,110,200,110,170,40,500];
+    var IMPERIAL = [500, 110, 500, 110, 450, 110, 200, 110, 170, 40, 450, 110, 200, 110, 170, 40, 500];
+
     function calculateDirection(startPoint, endPoint, threshold) {
 
         var tr = threshold || 30;
@@ -35,28 +36,28 @@
         }
     }
 
-    var fifteen = (function() {
+    var fifteen = (function () {
         var getIndexDiff = function (direction) {
-             if (direction === UP ) {
-                 return 4;
-             }
-             if (direction === DOWN) {
-                 return -4;
-             }
-             if (direction === LEFT) {
-                 return 1;
-             }
-             if (direction === RIGHT) {
-                 return -1;
-             }
-             return 0;
+            if (direction === UP) {
+                return 4;
+            }
+            if (direction === DOWN) {
+                return -4;
+            }
+            if (direction === LEFT) {
+                return 1;
+            }
+            if (direction === RIGHT) {
+                return -1;
+            }
+            return 0;
         };
         var order = [];
         var movesCount = 0;
-        var getElement = function(index) {
-          return order[index];
+        var getElement = function (index) {
+            return order[index];
         };
-		var shuffle =  function (array) {
+        var shuffle = function (array) {
             var counter = array.length;
 
             // While there are elements in the array
@@ -154,26 +155,26 @@
             }
             return !(kDisorder % 2);
         };
-        var reinit =  function () {
+        var reinit = function () {
             movesCount = 0;
-            order = [];            
-			for (var i = 1; i < 16; ++i) {
+            order = [];
+            for (var i = 1; i < 16; ++i) {
                 order.push(i);
             }
             // shuffle(order);
             order.push(0);
             hole = 15;
             // if (!solvable(order)) {
-               // swap(0, 1);
+            // swap(0, 1);
             // }
-			swap(14, 15);
+            swap(14, 15);
             hole = 14;
         };
         var getMovesCount = function () {
             return movesCount;
         };
         reinit();
-        return {go: go, bigGo : bigGo, isCompleted: isCompleted, getElement: getElement, getMovesCount: getMovesCount};
+        return {go: go, bigGo: bigGo, isCompleted: isCompleted, getElement: getElement, getMovesCount: getMovesCount};
 
     })();
 
@@ -213,10 +214,10 @@
         return -1;
     };
 
-    var handleEnd = function(evt) {
-		if (ongoingTouches.length < 1) {
-			return;
-		}
+    var handleEnd = function (evt) {
+        if (ongoingTouches.length < 1) {
+            return;
+        }
         evt.preventDefault();
         var touches = evt.changedTouches;
 
@@ -232,12 +233,12 @@
 
 
     var box = document.body.appendChild(document.createElement('div'));
-	box.className = "box";
+    box.className = "box";
     for (var i = 0; i < 16; i++) {
         var cell = document.createElement('div');
         box.appendChild(cell);
         if (i === 12) {
-            cell.addEventListener("click", function() {
+            cell.addEventListener("click", function () {
                 var res = navigator.vibrate(IMPERIAL);
                 console.log(res);
             });
@@ -246,9 +247,9 @@
 
     var canvas = document.createElement('canvas'),
         link = document.getElementById('favicon');
-          canvas.height = canvas.width = 16; // set the size
-      var ctx = canvas.getContext('2d');
-      ctx.fillStyle = '#000';
+    canvas.height = canvas.width = 16; // set the size
+    var ctx = canvas.getContext('2d');
+    ctx.fillStyle = '#000';
 
 
     function draw() {
@@ -267,7 +268,7 @@
         if (fifteen.isCompleted()) {
             box.style.backgroundColor = "red";
             navigator.vibrate(0);
-			navigator.vibrate(SPARTAK);
+            navigator.vibrate(SPARTAK);
         } else {
             navigator.vibrate(0);
             box.style.backgroundColor = "";
@@ -298,32 +299,35 @@
             drawAndCheck();
         }
     }
-	
-	function handleOrientation(event) {
-  var x = event.beta;  // In degree in the range [-180,180]
-  var y = event.gamma; // In degree in the range [-90,90]
 
-  console.log( "beta : " + x + "\n");
-  console.log( "gamma: " + y + "\n");
-  if (x > 40) {
-	  fifteen.bigGo(RIGHT, 0);
-	  fifteen.bigGo(RIGHT, 4);
-	  fifteen.bigGo(RIGHT, 8);
-	  fifteen.bigGo(RIGHT, 12);
-  }
-  if (x < -40) {
-	  fifteen.bigGo(LEFT, 3);
-	  fifteen.bigGo(RIGHT, 7);
-	  fifteen.bigGo(RIGHT, 11);
-	  fifteen.bigGo(RIGHT, 15);
-  }
-}
+    var showAngle = document.body.appendChild(document.createElement('div'));
+
+    function handleOrientation(event) {
+        var x = event.beta;  // In degree in the range [-180,180]
+        var y = event.gamma; // In degree in the range [-90,90]
+
+        console.log("beta : " + x + "\n");
+        console.log("gamma: " + y + "\n");
+        showAngle.innerText = y;
+        if (y > 40) {
+            fifteen.bigGo(RIGHT, 0);
+            fifteen.bigGo(RIGHT, 4);
+            fifteen.bigGo(RIGHT, 8);
+            fifteen.bigGo(RIGHT, 12);
+        }
+        if (y < -40) {
+            fifteen.bigGo(LEFT, 3);
+            fifteen.bigGo(RIGHT, 7);
+            fifteen.bigGo(RIGHT, 11);
+            fifteen.bigGo(RIGHT, 15);
+        }
+    }
 
     window.addEventListener('keydown', onKeyPress);
     box.addEventListener("touchstart", handleStart, false);
     box.addEventListener("touchend", handleEnd, false);
-	window.addEventListener('deviceorientation', handleOrientation);
-	
+    window.addEventListener('deviceorientation', handleOrientation);
+
 
     drawAndCheck();
 })(window, document);
