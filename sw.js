@@ -1,4 +1,4 @@
-var version = "0.1.1"
+var version = "0.1.2"
 var CACHE = 'cache-only';
 
 function fromCache(request) {

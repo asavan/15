@@ -196,7 +196,7 @@
     }
 
     var handleStart = function (evt) {
-        // evt.preventDefault();
+        evt.preventDefault();
         startPositionText = evt.target.textContent;
 
         var touches = evt.changedTouches;
@@ -217,7 +217,7 @@
 		if (ongoingTouches.length < 1) {
 			return;
 		}
-        // evt.preventDefault();
+        evt.preventDefault();
         var touches = evt.changedTouches;
 
         var end = pointFromTouch(touches[touches.length - 1]);
