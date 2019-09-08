@@ -170,7 +170,7 @@
             }
             return !(kDisorder % 2);
         };
-        const _reinit = function (needShuffle) {
+        const reinit = function (needShuffle) {
             movesCount = 0;
             order = [];
             for (let i = 1; i < 16; ++i) {
@@ -186,22 +186,22 @@
             }
             if (!needShuffle) {
                 swap(14, 15, order);
+                hole = 14;
             }
-            hole = 14;
+
         };
-        const reinit = _reinit(true);
         const getMovesCount = function () {
             return movesCount;
         };
-        _reinit(false);
+        reinit(false);
         return {
             go: go,
             bigGo: bigGo,
             isCompleted: isCompleted,
             getElement: getElement,
             getMovesCount: getMovesCount,
+            reinit: reinit,
             canGo: canGo,
-            reinit: reinit
         };
 
     })();
@@ -289,7 +289,7 @@
         ctx.fillStyle = '#000';
 
         const changeBage = function (num) {
-            if (fifteen.getMovesCount()<= 0) {
+            if (fifteen.getMovesCount() <= 0) {
                 return;
             }
             ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -395,11 +395,19 @@
         }
     }
 
-    window.addEventListener('keydown', onKeyPress);
+    function reinitGame() {
+        fifteen.reinit(true);
+        drawAndCheck();
+    }
+
     box.addEventListener("touchstart", handleStart, false);
     box.addEventListener("touchend", handleEnd, false);
     box.addEventListener("touchmove", drag, false);
+
+    window.addEventListener('keydown', onKeyPress);
     window.addEventListener('deviceorientation', handleOrientation);
+
+    reload.addEventListener("click", reinitGame, false);
 
 
     drawAndCheck();
