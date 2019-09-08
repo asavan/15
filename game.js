@@ -1,11 +1,13 @@
 (function (window, document) {
     "use strict"; // jshint ;_;
     //Constants
-    var LEFT = "left",
+    const LEFT = "left",
         RIGHT = "right",
         UP = "up",
         DOWN = "down",
         NONE = "";
+    const HORIZONTAL = [LEFT, RIGHT];
+    const VERTICAL = [UP, DOWN];
 
     var SPARTAK = [300, 200, 300, 200, 150, 100, 150, 100, 150, 300, 100, 100, 100, 100, 150, 100, 200, 300, 120, 130, 120, 300];
     var MORTAL = [100, 200, 100, 200, 100, 200, 100, 200, 100, 100, 100, 100, 100, 200, 100, 200, 100, 200, 100, 200, 100, 100, 100, 100, 100, 200, 100, 200, 100, 200, 100, 200, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 50, 50, 100, 800];
@@ -37,7 +39,7 @@
     }
 
     var fifteen = (function () {
-        var getIndexDiff = function (direction) {
+        const getIndexDiff = function (direction) {
             if (direction === UP) {
                 return 4;
             }
@@ -77,8 +79,8 @@
             return array;
         };
 
-        var getIndexesFromIndex = function (index) {
-            var point = {};
+        const getIndexesFromIndex = function (index) {
+            const point = {};
             point.x = index % 4;
             point.y = Math.floor(index / 4);
             return point;
@@ -92,10 +94,10 @@
             }
             return calculateDirection(startPoint, endPoint, 1);
         };
-        var _doMagic = function (startPosition, hole, direction) {
-            var distance = Math.abs(hole.x - startPosition.x + hole.y - startPosition.y);
-            var res = false;
-            for (var i = 0; i < distance; ++i) {
+        const _doMagic = function (startPosition, hole, direction) {
+            const distance = Math.abs(hole.x - startPosition.x + hole.y - startPosition.y);
+            let res = false;
+            for (let i = 0; i < distance; ++i) {
                 res |= _go(direction);
             }
             if (res) ++movesCount;
@@ -118,11 +120,12 @@
                 return item > 0 && item - 1 !== i;
             });
         };
-        var _go = function (direction) {
+
+        const _canGo = function (direction) {
             if (!direction || direction === NONE) {
                 return false;
             }
-            var index = hole + getIndexDiff(direction);
+            const index = hole + getIndexDiff(direction);
             if (index < 0 || index > 15) {
                 return false;
             }
@@ -131,12 +134,27 @@
                     return false;
                 }
             }
+            return true;
+        };
+        
+        const canGo = function (direction, index) {
+            const index2 = hole + getIndexDiff(direction);
+            console.log(index + " " + index2);
+            return index === index2;
+        };
+
+        const _go = function (direction) {
+            if (!_canGo(direction)) {
+                return false;
+            }
+            const index = hole + getIndexDiff(direction);
             swap(index, hole);
             hole = index;
             return true;
         };
-        var go = function (direction) {
-            var res = _go(direction);
+
+        const go = function (direction) {
+            const res = _go(direction);
             if (res) ++movesCount;
             return res;
         };
@@ -174,34 +192,30 @@
             return movesCount;
         };
         reinit();
-        return {go: go, bigGo: bigGo, isCompleted: isCompleted, getElement: getElement, getMovesCount: getMovesCount};
+        return {go: go, bigGo: bigGo, isCompleted: isCompleted, getElement: getElement, getMovesCount: getMovesCount, canGo: canGo};
 
     })();
 
     var ongoingTouches = [];
     var startPositionText = "";
+    let activeCell = null;
 
-    function log(msg) {
-        var p = document.getElementById('log');
-        if (p) {
-            p.innerHTML = msg + "\n" + p.innerHTML;
-        }
-        console.log(msg)
-    }
 
     function pointFromTouch(touch) {
-        var point = {};
+        const point = {};
         point.x = touch.pageX || touch.clientX;
         point.y = touch.pageY || touch.clientY;
         return point;
     }
 
-    var handleStart = function (evt) {
+    const handleStart = function (evt) {
         evt.preventDefault();
+        activeCell = evt.target;
+        activeCell.style.backgroundColor= "blue";
         startPositionText = evt.target.textContent;
 
-        var touches = evt.changedTouches;
-        var start = pointFromTouch(touches[0]);
+        const touches = evt.changedTouches;
+        const start = pointFromTouch(touches[0]);
         ongoingTouches.push(start);
     };
 
@@ -228,39 +242,61 @@
         if (fifteen.bigGo(direction, getElementIndex(startPositionText))) {
             drawAndCheck();
         }
+        if (activeCell) {
+            activeCell.style.transform = "translate(0px)";
+            activeCell.style.backgroundColor = "";
+        }
+        activeCell = null;
         ongoingTouches = [];
     };
+
+    function log(msg) {
+        var p = document.getElementById('log');
+        if (p) {
+            p.innerHTML = msg + "\n" + p.innerHTML;
+        }
+        console.log(msg)
+    }
 
 
     var box = document.body.appendChild(document.createElement('div'));
     box.className = "box";
-    for (var i = 0; i < 16; i++) {
-        var cell = document.createElement('div');
+    var log1 = document.body.appendChild(document.createElement('div'));
+    log1.setAttribute("id", "log");
+
+    for (let i = 0; i < 16; i++) {
+        const cell = document.createElement('div');
+        cell.className = 'cell';
         box.appendChild(cell);
-        if (i === 12) {
-            cell.addEventListener("click", function () {
-                var res = navigator.vibrate(IMPERIAL);
-                console.log(res);
-            });
-        }
     }
 
-    var canvas = document.createElement('canvas'),
-        link = document.getElementById('favicon');
-    canvas.height = canvas.width = 16; // set the size
-    var ctx = canvas.getContext('2d');
-    ctx.fillStyle = '#000';
+    const iconChanger = function () {
+        var canvas = document.createElement('canvas');
+        var link = document.getElementById('favicon');
+        canvas.height = canvas.width = 16; // set the size
+        var ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#000';
+
+        const changeBage = function (num) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillText(fifteen.getMovesCount(), 2, 12);
+            link.href = canvas.toDataURL('image/png');
+        };
+        return {changeBage: changeBage}
+    }();
 
 
     function draw() {
-        for (var i = 0, tile; tile = box.childNodes[i], i < 16; i++) {
-            var val = fifteen.getElement(i);
+        for (let i = 0, tile;  i < 16; i++) {
+            const tile = box.childNodes[i];
+            const val = fifteen.getElement(i);
             tile.textContent = val;
-            tile.style.visibility = val ? 'visible' : 'hidden';
+            if (val) {
+                tile.className = 'cell';
+            } else {
+                tile.className = 'cell hole';
+            }
         }
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.fillText(fifteen.getMovesCount(), 2, 12);
-        link.href = canvas.toDataURL('image/png');
     }
 
     function drawAndCheck() {
@@ -271,25 +307,30 @@
             navigator.vibrate(SPARTAK);
         } else {
             navigator.vibrate(0);
+            iconChanger.changeBage(fifteen.getMovesCount());
             box.style.backgroundColor = "";
         }
     }
 
     function onKeyPress(e) {
         // e.preventDefault();
-        var keyKodeToDirection = function (keyCode) {
+        const keyKodeToDirection = function (keyCode) {
             switch (keyCode) {
                 case 37:
                 case 72:
+                case 65:
                     return LEFT;
                 case 39:
                 case 76:
+                case 68:
                     return RIGHT;
                 case 38:
                 case 75:
+                case 87:
                     return UP;
                 case 40:
                 case 74:
+                case 83:
                     return DOWN;
                 default:
                     return NONE;
@@ -299,33 +340,50 @@
             drawAndCheck();
         }
     }
-
-    var showAngle = document.body.appendChild(document.createElement('div'));
+    
+    function drag(e) {
+        e.preventDefault();
+        const p = pointFromTouch(e.touches[0]);
+        const start = ongoingTouches[0];
+        if (activeCell) {
+            const distX = p.x - start.x;
+            const distY = p.y - start.y;
+            const dir = calculateDirection(start, p, 1);
+            if (fifteen.canGo(dir, getElementIndex(startPositionText))) {
+                log(distX);
+                if (Math.abs(distX) >= Math.abs(distY)) {
+                    activeCell.style.transform = "translateX(" + distX + "px)";
+                } else {
+                    activeCell.style.transform = "translateY(" + distY + "px)";
+                }
+            }
+        }
+    }
 
     function handleOrientation(event) {
-        var x = event.beta;  // In degree in the range [-180,180]
-        var y = event.gamma; // In degree in the range [-90,90]
-
-        console.log("beta : " + x + "\n");
-        console.log("gamma: " + y + "\n");
-        showAngle.innerText = y;
-        if (y > 40) {
-            fifteen.bigGo(RIGHT, 0);
-            fifteen.bigGo(RIGHT, 4);
-            fifteen.bigGo(RIGHT, 8);
-            fifteen.bigGo(RIGHT, 12);
+        const y = event.gamma; // In degree in the range [-90,90]
+        let res = false;
+        if (y > 70) {
+            res |= fifteen.bigGo(RIGHT, 0);
+            res |= fifteen.bigGo(RIGHT, 4);
+            res |= fifteen.bigGo(RIGHT, 8);
+            res |= fifteen.bigGo(RIGHT, 12);
         }
-        if (y < -40) {
-            fifteen.bigGo(LEFT, 3);
-            fifteen.bigGo(RIGHT, 7);
-            fifteen.bigGo(RIGHT, 11);
-            fifteen.bigGo(RIGHT, 15);
+        if (y < -70) {
+            res |= fifteen.bigGo(LEFT, 3);
+            res |= fifteen.bigGo(LEFT, 7);
+            res |= fifteen.bigGo(LEFT, 11);
+            res |= fifteen.bigGo(LEFT, 15);
+        }
+        if (res) {
+            requestAnimationFrame(drawAndCheck);
         }
     }
 
     window.addEventListener('keydown', onKeyPress);
     box.addEventListener("touchstart", handleStart, false);
     box.addEventListener("touchend", handleEnd, false);
+    box.addEventListener("touchmove", drag, false);
     window.addEventListener('deviceorientation', handleOrientation);
 
 
