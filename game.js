@@ -160,7 +160,8 @@
         };
 
         const solvable = function (a) {
-            for (let kDisorder = 0, i = 1, len = a.length - 1; i < len; i++) {
+            let kDisorder = 0;
+            for (let i = 1, len = a.length - 1; i < len; i++) {
                 for (let j = i - 1; j >= 0; j--) {
                     if (a[j] > a[i]) {
                         ++kDisorder;
@@ -288,6 +289,9 @@
         ctx.fillStyle = '#000';
 
         const changeBage = function (num) {
+            if (fifteen.getMovesCount()<= 0) {
+                return;
+            }
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             ctx.fillText(fifteen.getMovesCount(), 2, 12);
             link.href = canvas.toDataURL('image/png');
