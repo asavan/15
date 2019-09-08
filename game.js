@@ -9,15 +9,15 @@
     const HORIZONTAL = [LEFT, RIGHT];
     const VERTICAL = [UP, DOWN];
 
-    var SPARTAK = [300, 200, 300, 200, 150, 100, 150, 100, 150, 300, 100, 100, 100, 100, 150, 100, 200, 300, 120, 130, 120, 300];
-    var MORTAL = [100, 200, 100, 200, 100, 200, 100, 200, 100, 100, 100, 100, 100, 200, 100, 200, 100, 200, 100, 200, 100, 100, 100, 100, 100, 200, 100, 200, 100, 200, 100, 200, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 50, 50, 100, 800];
-    var IMPERIAL = [500, 110, 500, 110, 450, 110, 200, 110, 170, 40, 450, 110, 200, 110, 170, 40, 500];
+    const SPARTAK = [300, 200, 300, 200, 150, 100, 150, 100, 150, 300, 100, 100, 100, 100, 150, 100, 200, 300, 120, 130, 120, 300];
+    const MORTAL = [100, 200, 100, 200, 100, 200, 100, 200, 100, 100, 100, 100, 100, 200, 100, 200, 100, 200, 100, 200, 100, 100, 100, 100, 100, 200, 100, 200, 100, 200, 100, 200, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 50, 50, 100, 800];
+    const IMPERIAL = [500, 110, 500, 110, 450, 110, 200, 110, 170, 40, 450, 110, 200, 110, 170, 40, 500];
 
     function calculateDirection(startPoint, endPoint, threshold) {
 
-        var tr = threshold || 30;
-        var x = endPoint.x - startPoint.x;
-        var y = endPoint.y - startPoint.y;
+        const tr = threshold || 30;
+        const x = endPoint.x - startPoint.x;
+        const y = endPoint.y - startPoint.y;
 
         if (Math.abs(x) + Math.abs(y) < tr) {
             return NONE;
@@ -38,7 +38,7 @@
         }
     }
 
-    var fifteen = (function () {
+    const fifteen = (function () {
         const getIndexDiff = function (direction) {
             if (direction === UP) {
                 return 4;
@@ -54,28 +54,29 @@
             }
             return 0;
         };
-        var order = [];
-        var movesCount = 0;
-        var getElement = function (index) {
+        let order = [];
+        let movesCount = 0;
+        const getElement = function (index) {
             return order[index];
         };
-        var shuffle = function (array) {
-            var counter = array.length;
+        const swap = function (i1, i2, array) {
+            const t = array[i1];
+            array[i1] = array[i2];
+            array[i2] = t;
+        };
+
+        const shuffle = function (array) {
+            let counter = array.length;
 
             // While there are elements in the array
             while (counter > 0) {
                 // Pick a random index
-                var index = Math.floor(Math.random() * counter);
-
+                const index = Math.floor(Math.random() * counter);
                 // Decrease counter by 1
                 counter--;
-
                 // And swap the last element with it
-                var temp = array[counter];
-                array[counter] = array[index];
-                array[index] = temp;
+                swap(counter, index, array);
             }
-
             return array;
         };
 
@@ -86,9 +87,9 @@
             return point;
         };
 
-        var direction = function (startPoint, endPoint) {
-            var x = endPoint.x - startPoint.x;
-            var y = endPoint.y - startPoint.y;
+        const direction = function (startPoint, endPoint) {
+            const x = endPoint.x - startPoint.x;
+            const y = endPoint.y - startPoint.y;
             if (x !== 0 && y !== 0) {
                 return NONE;
             }
@@ -104,18 +105,18 @@
             return res;
         };
 
-        var bigGo = function (dir, index) {
-            var startPosition = getIndexesFromIndex(index);
-            var holePoint = getIndexesFromIndex(hole);
-            var toHoleDirection = direction(startPosition, holePoint);
+        const bigGo = function (dir, index) {
+            const startPosition = getIndexesFromIndex(index);
+            const holePoint = getIndexesFromIndex(hole);
+            const toHoleDirection = direction(startPosition, holePoint);
             if (dir === toHoleDirection && toHoleDirection !== NONE) {
                 return _doMagic(startPosition, holePoint, toHoleDirection);
             }
             return false;
         };
 
-        var hole = 15;
-        var isCompleted = function () {
+        let hole = 15;
+        const isCompleted = function () {
             return !order.some(function (item, i) {
                 return item > 0 && item - 1 !== i;
             });
@@ -136,10 +137,9 @@
             }
             return true;
         };
-        
+
         const canGo = function (direction, index) {
             const index2 = hole + getIndexDiff(direction);
-            console.log(index + " " + index2);
             return index === index2;
         };
 
@@ -148,7 +148,7 @@
                 return false;
             }
             const index = hole + getIndexDiff(direction);
-            swap(index, hole);
+            swap(index, hole, order);
             hole = index;
             return true;
         };
@@ -158,14 +158,10 @@
             if (res) ++movesCount;
             return res;
         };
-        var swap = function (i1, i2) {
-            var t = order[i1];
-            order[i1] = order[i2];
-            order[i2] = t;
-        };
-        var solvable = function (a) {
-            for (var kDisorder = 0, i = 1, len = a.length - 1; i < len; i++) {
-                for (var j = i - 1; j >= 0; j--) {
+
+        const solvable = function (a) {
+            for (let kDisorder = 0, i = 1, len = a.length - 1; i < len; i++) {
+                for (let j = i - 1; j >= 0; j--) {
                     if (a[j] > a[i]) {
                         ++kDisorder;
                     }
@@ -173,31 +169,44 @@
             }
             return !(kDisorder % 2);
         };
-        var reinit = function () {
+        const _reinit = function (needShuffle) {
             movesCount = 0;
             order = [];
-            for (var i = 1; i < 16; ++i) {
+            for (let i = 1; i < 16; ++i) {
                 order.push(i);
             }
-            // shuffle(order);
+            if (needShuffle) {
+                shuffle(order);
+            }
             order.push(0);
             hole = 15;
-            // if (!solvable(order)) {
-            // swap(0, 1);
-            // }
-            swap(14, 15);
+            if (!solvable(order)) {
+                swap(0, 1, order);
+            }
+            if (!needShuffle) {
+                swap(14, 15, order);
+            }
             hole = 14;
         };
-        var getMovesCount = function () {
+        const reinit = _reinit(true);
+        const getMovesCount = function () {
             return movesCount;
         };
-        reinit();
-        return {go: go, bigGo: bigGo, isCompleted: isCompleted, getElement: getElement, getMovesCount: getMovesCount, canGo: canGo};
+        _reinit(false);
+        return {
+            go: go,
+            bigGo: bigGo,
+            isCompleted: isCompleted,
+            getElement: getElement,
+            getMovesCount: getMovesCount,
+            canGo: canGo,
+            reinit: reinit
+        };
 
     })();
 
-    var ongoingTouches = [];
-    var startPositionText = "";
+    let ongoingTouches = [];
+    let startPositionText = "";
     let activeCell = null;
 
 
@@ -211,7 +220,7 @@
     const handleStart = function (evt) {
         evt.preventDefault();
         activeCell = evt.target;
-        activeCell.style.backgroundColor= "blue";
+        activeCell.style.backgroundColor = "blue";
         startPositionText = evt.target.textContent;
 
         const touches = evt.changedTouches;
@@ -219,8 +228,8 @@
         ongoingTouches.push(start);
     };
 
-    var getElementIndex = function (elem) {
-        for (var i = 0; i < 16; ++i) {
+    const getElementIndex = function (elem) {
+        for (let i = 0; i < 16; ++i) {
             if (fifteen.getElement(i) === +elem) {
                 return i;
             }
@@ -228,17 +237,17 @@
         return -1;
     };
 
-    var handleEnd = function (evt) {
+    const handleEnd = function (evt) {
         if (ongoingTouches.length < 1) {
             return;
         }
         evt.preventDefault();
-        var touches = evt.changedTouches;
+        const touches = evt.changedTouches;
 
-        var end = pointFromTouch(touches[touches.length - 1]);
-        var start = ongoingTouches[0];
+        const end = pointFromTouch(touches[touches.length - 1]);
+        const start = ongoingTouches[0];
 
-        var direction = calculateDirection(start, end);
+        const direction = calculateDirection(start, end);
         if (fifteen.bigGo(direction, getElementIndex(startPositionText))) {
             drawAndCheck();
         }
@@ -251,18 +260,19 @@
     };
 
     function log(msg) {
-        var p = document.getElementById('log');
-        if (p) {
-            p.innerHTML = msg + "\n" + p.innerHTML;
+        let p = document.getElementById('log');
+        if (!p) {
+            p = document.body.appendChild(document.createElement('div'));
+            p.setAttribute("id", "log");
         }
+        p.innerHTML = msg + "\n" + p.innerHTML;
         console.log(msg)
     }
 
 
-    var box = document.body.appendChild(document.createElement('div'));
-    box.className = "box";
-    var log1 = document.body.appendChild(document.createElement('div'));
-    log1.setAttribute("id", "log");
+    const box = document.getElementsByClassName("box")[0]; // document.body.appendChild(document.createElement('div'));
+    // box.className = "box";
+    const reload = document.getElementsByClassName("reload")[0];
 
     for (let i = 0; i < 16; i++) {
         const cell = document.createElement('div');
@@ -271,10 +281,10 @@
     }
 
     const iconChanger = function () {
-        var canvas = document.createElement('canvas');
-        var link = document.getElementById('favicon');
+        const canvas = document.createElement('canvas');
+        const link = document.getElementById('favicon');
         canvas.height = canvas.width = 16; // set the size
-        var ctx = canvas.getContext('2d');
+        const ctx = canvas.getContext('2d');
         ctx.fillStyle = '#000';
 
         const changeBage = function (num) {
@@ -287,7 +297,7 @@
 
 
     function draw() {
-        for (let i = 0, tile;  i < 16; i++) {
+        for (let i = 0, tile; i < 16; i++) {
             const tile = box.childNodes[i];
             const val = fifteen.getElement(i);
             tile.textContent = val;
@@ -297,17 +307,19 @@
                 tile.className = 'cell hole';
             }
         }
+        iconChanger.changeBage(fifteen.getMovesCount());
     }
 
     function drawAndCheck() {
         draw();
         if (fifteen.isCompleted()) {
             box.style.backgroundColor = "red";
+            reload.className = "reload";
             navigator.vibrate(0);
             navigator.vibrate(SPARTAK);
         } else {
             navigator.vibrate(0);
-            iconChanger.changeBage(fifteen.getMovesCount());
+            reload.className = "reload hidden";
             box.style.backgroundColor = "";
         }
     }
@@ -340,7 +352,7 @@
             drawAndCheck();
         }
     }
-    
+
     function drag(e) {
         e.preventDefault();
         const p = pointFromTouch(e.touches[0]);
@@ -350,7 +362,6 @@
             const distY = p.y - start.y;
             const dir = calculateDirection(start, p, 1);
             if (fifteen.canGo(dir, getElementIndex(startPositionText))) {
-                log(distX);
                 if (Math.abs(distX) >= Math.abs(distY)) {
                     activeCell.style.transform = "translateX(" + distX + "px)";
                 } else {
