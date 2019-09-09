@@ -143,8 +143,14 @@
             return index === index2;
         };
 
-        const canGo2 = function (direction, index) {
-            return getActiveElements(index).length > 0;
+        const canGo2 = function (dir, index) {
+            const startPosition = getIndexesFromIndex(index);
+            const holePoint = getIndexesFromIndex(hole);
+            const toHoleDirection = direction(startPosition, holePoint);
+            if (dir === toHoleDirection && toHoleDirection !== NONE) {
+                return getActiveElements(index).length > 0;
+            }
+            return false;
         };
 
 
@@ -230,7 +236,7 @@
             getElement: getElement,
             getMovesCount: getMovesCount,
             reinit: reinit,
-            canGo: canGo,
+            canGo: canGo2,
             getActiveElements: getActiveElements
         };
 
@@ -256,7 +262,7 @@
         activeCell = evt.target;
         activeCell.style.backgroundColor = "blue";
         startPositionText = evt.target.textContent;
-        log(fifteen.getActiveElements(getElementIndex(startPositionText)));
+        // log(fifteen.getActiveElements(getElementIndex(startPositionText)));
 
         const touches = evt.changedTouches;
         const start = pointFromTouch(touches[0]);
@@ -279,6 +285,7 @@
 
     const handleEnd = function (evt) {
         if (activeCell) {
+            endMoving(activeCell);
             for (let index of fifteen.getActiveElements(getElementIndex(startPositionText))) {
                 endMoving(getCellByIndex(index));
             }
@@ -409,11 +416,14 @@
     }
     function moveX(activeCell, distX) {
         const height = box.offsetWidth / 4;
+        const color = distX ? "green" : "";
+        activeCell.style.backgroundColor = color;
         activeCell.style.transform = "translateX(" + maxTranslate(distX, height) + "px)";
     }
 
     function moveY(activeCell, distY) {
         const height = box.offsetHeight / 4;
+        activeCell.style.backgroundColor = "purple";
         activeCell.style.transform = "translateY(" + maxTranslate(distY, height) + "px)";
     }
 
@@ -423,18 +433,27 @@
         const p = pointFromTouch(e.touches[0]);
         if (activeCell) {
             const start = ongoingTouches[0];
-            const height = box.offsetHeight / 4;
             const distX = p.x - start.x;
             const distY = p.y - start.y;
             const dir = calculateDirection(start, p, 1);
             if (fifteen.canGo(dir, getElementIndex(startPositionText))) {
-                if (Math.abs(distX) >= Math.abs(distY)) {
-                    moveX(activeCell, distX);
+                if (HORIZONTAL.includes(dir)) {
+                    for (let index of fifteen.getActiveElements(getElementIndex(startPositionText))) {
+                        // log(dir + " " + distX + " " + distY);
+                        moveX(getCellByIndex(index), distX);
+                    }
+                    // moveX(activeCell, distX);
                 } else {
-                    moveY(activeCell, distY);
+                    for (let index of fifteen.getActiveElements(getElementIndex(startPositionText))) {
+                        moveY(getCellByIndex(index), distY);
+                    }
+                    // moveY(activeCell, distY);
                 }
             } else {
-                moveX(activeCell, 0);
+                // moveX(activeCell, 0);
+                for (let index of fifteen.getActiveElements(getElementIndex(startPositionText))) {
+                    moveX(getCellByIndex(index), 0);
+                }
             }
         }
     }
