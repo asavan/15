@@ -143,6 +143,11 @@
             return index === index2;
         };
 
+        const canGo2 = function (direction, index) {
+            return getActiveElements(index).length > 0;
+        };
+
+
         const _go = function (direction) {
             if (!_canGo(direction)) {
                 return false;
@@ -157,6 +162,30 @@
             const res = _go(direction);
             if (res) ++movesCount;
             return res;
+        };
+
+        const getActiveElements = function (index) {
+            const startPosition = getIndexesFromIndex(index);
+            const holePoint = getIndexesFromIndex(hole);
+            const ans = [];
+            if (startPosition.x === holePoint.x) {
+                let lastIndex = index;
+                let y = Math.abs(startPosition.y - holePoint.y);
+                while (y > 0) {
+                    ans.push(lastIndex);
+                    lastIndex -= 4 * Math.sign(startPosition.y - holePoint.y);
+                    --y;
+                }
+            } else if (startPosition.y === holePoint.y) {
+                let lastIndex = index;
+                let y = Math.abs(startPosition.x - holePoint.x);
+                while (y > 0) {
+                    ans.push(lastIndex);
+                    lastIndex -= Math.sign(startPosition.x - holePoint.x);
+                    --y;
+                }
+            }
+            return ans;
         };
 
         const solvable = function (a) {
@@ -202,6 +231,7 @@
             getMovesCount: getMovesCount,
             reinit: reinit,
             canGo: canGo,
+            getActiveElements: getActiveElements
         };
 
     })();
@@ -220,9 +250,13 @@
 
     const handleStart = function (evt) {
         evt.preventDefault();
+        if (!evt.target.classList.contains('cell') || activeCell) {
+            return;
+        }
         activeCell = evt.target;
         activeCell.style.backgroundColor = "blue";
         startPositionText = evt.target.textContent;
+        log(fifteen.getActiveElements(getElementIndex(startPositionText)));
 
         const touches = evt.changedTouches;
         const start = pointFromTouch(touches[0]);
@@ -238,7 +272,18 @@
         return -1;
     };
 
+    function endMoving(activeCell) {
+        activeCell.style.backgroundColor = "";
+        activeCell.style.transform = "translate(0px)";
+    }
+
     const handleEnd = function (evt) {
+        if (activeCell) {
+            for (let index of fifteen.getActiveElements(getElementIndex(startPositionText))) {
+                endMoving(getCellByIndex(index));
+            }
+        }
+        activeCell = null;
         if (ongoingTouches.length < 1) {
             return;
         }
@@ -252,11 +297,6 @@
         if (fifteen.bigGo(direction, getElementIndex(startPositionText))) {
             drawAndCheck();
         }
-        if (activeCell) {
-            activeCell.style.transform = "translate(0px)";
-            activeCell.style.backgroundColor = "";
-        }
-        activeCell = null;
         ongoingTouches = [];
     };
 
@@ -357,20 +397,44 @@
         }
     }
 
+    function maxTranslate(dist, width) {
+        if (dist >= 0) {
+            return Math.min(dist, width);
+        }
+        return Math.max(dist, -width);
+    }
+
+    function getCellByIndex(i) {
+        return box.childNodes[i];
+    }
+    function moveX(activeCell, distX) {
+        const height = box.offsetWidth / 4;
+        activeCell.style.transform = "translateX(" + maxTranslate(distX, height) + "px)";
+    }
+
+    function moveY(activeCell, distY) {
+        const height = box.offsetHeight / 4;
+        activeCell.style.transform = "translateY(" + maxTranslate(distY, height) + "px)";
+    }
+
+
     function drag(e) {
         e.preventDefault();
         const p = pointFromTouch(e.touches[0]);
-        const start = ongoingTouches[0];
         if (activeCell) {
+            const start = ongoingTouches[0];
+            const height = box.offsetHeight / 4;
             const distX = p.x - start.x;
             const distY = p.y - start.y;
             const dir = calculateDirection(start, p, 1);
             if (fifteen.canGo(dir, getElementIndex(startPositionText))) {
                 if (Math.abs(distX) >= Math.abs(distY)) {
-                    activeCell.style.transform = "translateX(" + distX + "px)";
+                    moveX(activeCell, distX);
                 } else {
-                    activeCell.style.transform = "translateY(" + distY + "px)";
+                    moveY(activeCell, distY);
                 }
+            } else {
+                moveX(activeCell, 0);
             }
         }
     }
@@ -402,6 +466,7 @@
 
     box.addEventListener("touchstart", handleStart, false);
     box.addEventListener("touchend", handleEnd, false);
+    box.addEventListener("touchcancel", handleEnd, false);
     box.addEventListener("touchmove", drag, false);
 
     window.addEventListener('keydown', onKeyPress);
