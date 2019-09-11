@@ -414,6 +414,7 @@
     function getCellByIndex(i) {
         return box.childNodes[i];
     }
+
     function moveX(activeCell, distX) {
         const height = box.offsetWidth / 4;
         const color = distX ? "green" : "";
@@ -459,17 +460,21 @@
     }
 
     function handleOrientation(event) {
-        const y = event.gamma; // In degree in the range [-90,90]
-        const str = "alpha " + event.alpha + " beta " + event.beta + " gamma " + event.gamma;
+        let y = event.gamma; // In degree in the range [-90,90]
+        const orientation = window.screen.orientation;
+        const str = "alpha " + event.alpha + " beta " + event.beta + " gamma " + event.gamma + " or " + orientation;
         log(str);
+        if (orientation === "landscape-secondary") {
+            y *= -1;
+        }
         let res = false;
-        if (y > 70) {
+        if (y > 50) {
             res |= fifteen.bigGo(RIGHT, 0);
             res |= fifteen.bigGo(RIGHT, 4);
             res |= fifteen.bigGo(RIGHT, 8);
             res |= fifteen.bigGo(RIGHT, 12);
         }
-        if (y < -70) {
+        if (y < -50) {
             res |= fifteen.bigGo(LEFT, 3);
             res |= fifteen.bigGo(LEFT, 7);
             res |= fifteen.bigGo(LEFT, 11);
