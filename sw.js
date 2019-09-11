@@ -1,4 +1,4 @@
-const version = "0.1.10";
+const version = "0.1.12";
 const CACHE = 'cache-only';
 
 function fromCache(request) {
@@ -23,12 +23,10 @@ function precache() {
 }
 
 self.addEventListener('install', function (evt) {
-    console.log('The service worker is being installed.');
     evt.waitUntil(precache());
 });
 
 self.addEventListener('fetch', function (evt) {
-    console.log('The service worker is serving the asset.');
     evt.respondWith(fromCache(evt.request).catch(function () {
         return fetch(evt.request);
     }));

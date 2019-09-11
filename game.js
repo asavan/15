@@ -460,6 +460,8 @@
 
     function handleOrientation(event) {
         const y = event.gamma; // In degree in the range [-90,90]
+        const str = "alpha " + event.alpha + " beta " + event.beta + " gamma " + event.gamma;
+        log(str);
         let res = false;
         if (y > 70) {
             res |= fifteen.bigGo(RIGHT, 0);

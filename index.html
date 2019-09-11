@@ -19,16 +19,10 @@
     <script>
         try {
             if('serviceWorker' in navigator) {
-                navigator.serviceWorker.register('./sw.js', { scope: './' })
-                    .then(function(registration) {
-                        console.log('Service Worker Registered');
-                    });
-                navigator.serviceWorker.ready.then(function(registration) {
-                    console.log('Service Worker Ready');
-                });
+                navigator.serviceWorker.register('./sw.js', { scope: './' });
             }
 			if (navigator.getGamepads) {
-				var script = document.createElement('script');
+				const script = document.createElement('script');
 				script.src = "gamepad.js";
 				document.body.appendChild(script);
 			}
