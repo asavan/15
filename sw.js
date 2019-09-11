@@ -1,4 +1,4 @@
-const version = "0.1.13";
+const version = "0.1.14";
 const CACHE = 'cache-only';
 
 function fromCache(request) {
