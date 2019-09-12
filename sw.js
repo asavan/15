@@ -26,8 +26,16 @@ self.addEventListener('install', function (evt) {
     evt.waitUntil(precache());
 });
 
-self.addEventListener('fetch', function (evt) {
-    evt.respondWith(fromCache(evt.request).catch(function () {
-        return fetch(evt.request);
-    }));
+// self.addEventListener('fetch', function (evt) {
+//     evt.respondWith(fromCache(evt.request).catch(function () {
+//         return fetch(evt.request);
+//     }));
+// });
+
+self.addEventListener('fetch', function(event) {
+    event.respondWith(
+        fetch(event.request).catch(function() {
+            return fromCache(event.request);
+        })
+    );
 });
