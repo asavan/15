@@ -461,8 +461,6 @@
     function handleOrientation(event) {
         let y = event.gamma; // In degree in the range [-90,90]
 //        const orientation = window.screen.orientation.type;
-//        const str = "alpha " + event.alpha + " beta " + event.beta + " gamma " + event.gamma + " or " + orientation;
-        log(str);
         if (event.beta > 90) {
             y *= -1;
         }
