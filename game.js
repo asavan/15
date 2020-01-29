@@ -38,22 +38,23 @@
         }
     }
 
+    const getIndexDiff = function (direction) {
+        if (direction === UP) {
+            return 4;
+        }
+        if (direction === DOWN) {
+            return -4;
+        }
+        if (direction === LEFT) {
+            return 1;
+        }
+        if (direction === RIGHT) {
+            return -1;
+        }
+        return 0;
+    };
+
     const fifteen = (function () {
-        const getIndexDiff = function (direction) {
-            if (direction === UP) {
-                return 4;
-            }
-            if (direction === DOWN) {
-                return -4;
-            }
-            if (direction === LEFT) {
-                return 1;
-            }
-            if (direction === RIGHT) {
-                return -1;
-            }
-            return 0;
-        };
         let order = [];
         let movesCount = 0;
         const getElement = function (index) {
@@ -106,6 +107,9 @@
             if (dir === NONE) {
                 return false;
             }
+            if (index < 0 || index > 15) {
+                return false;
+            }
             const toHoleDirection = getHoleDirection(index);
             if (dir !== toHoleDirection) {
                 return false;
@@ -128,22 +132,6 @@
             });
         };
 
-        const _canGo = function (direction) {
-            if (!direction || direction === NONE) {
-                return false;
-            }
-            const index = hole + getIndexDiff(direction);
-            if (index < 0 || index > 15) {
-                return false;
-            }
-            if (direction === LEFT || direction === RIGHT) {
-                if (Math.floor(hole / 4) !== Math.floor(index / 4)) {
-                    return false;
-                }
-            }
-            return true;
-        };
-
         const canGo = function (dir, index) {
             if (!dir || dir === NONE) {
                 return false;
@@ -155,20 +143,9 @@
             return getActiveElements(index).length > 0;
         };
 
-        const _go = function (direction) {
-            if (!_canGo(direction)) {
-                return false;
-            }
-            const index = hole + getIndexDiff(direction);
-            swap(index, hole, order);
-            hole = index;
-            return true;
-        };
 
         const go = function (direction) {
-            const res = _go(direction);
-            if (res) ++movesCount;
-            return res;
+            return bigGo(direction, hole + getIndexDiff(direction));
         };
 
         const getActiveElements = function (index) {
@@ -282,32 +259,41 @@
         return -1;
     };
 
-    function endMoving(activeCell) {
-        activeCell.style.backgroundColor = "";
-        activeCell.style.transform = "";
-        // activeCell.style.transition = "transform 300ms linear";
-    }
 
     const handleEnd = function (evt) {
-        // if (activeCell) {
-        //     endMoving(activeCell);
-        //     for (let index of fifteen.getActiveElements(startIndex)) {
-        //         endMoving(getCellByIndex(index));
-        //     }
-        // }
-        activeCell = null;
         if (!startPoint) {
             return;
         }
         evt.preventDefault();
-        const end = pointFromTouch(evt.changedTouches[0]);
-        const direction = calculateDirection(startPoint, end);
+        const p = pointFromTouch(evt.changedTouches[0]);
+        const direction = calculateDirection(startPoint, p);
+        const animationTime = 100;
 
-        fifteen.bigGo(direction, startIndex);
-        startPoint = null;
-        startIndex = null;
-        hasHiddenMove = false;
-        setTimeout(drawAndCheck, 50);
+        const start = startPoint;
+        const distX = p.x - start.x;
+        const distY = p.y - start.y;
+        if (fifteen.canGo(direction, startIndex)) {
+            for (let index of fifteen.getActiveElements(startIndex)) {
+                let cell = getCellByIndex(index);
+                const height = box.offsetWidth / 4;
+                if (HORIZONTAL.includes(direction)) {
+                    moveX(cell, height * Math.sign(distX));
+                } else {
+                    moveY(cell, height * Math.sign(distY));
+                }
+                cell.style.backgroundColor = "";
+                cell.style.transition = "transform " + animationTime + "ms linear";
+            }
+        }
+
+        setTimeout(function () {
+            fifteen.bigGo(direction, startIndex);
+            drawAndCheck();
+            startPoint = null;
+            startIndex = null;
+            activeCell = null;
+            hasHiddenMove = false;
+        }, animationTime);
     };
 
     function log(msg) {
@@ -432,19 +418,41 @@
         activeCell.style.transform = "translateY(" + maxTranslate(distY, height) + "px)";
     }
 
+    const opositeDirection = function (dir1, dir2) {
+        const index1 = getIndexDiff(dir1);
+        const index2 = getIndexDiff(dir2);
+        return index1 !== 0 && index1 === -index2;
+    };
+
 
     function drag(e) {
         e.preventDefault();
         const p = pointFromTouch(e.touches[0]);
+        const animationTime = 100;
         if (activeCell) {
             const start = startPoint;
             const distX = p.x - start.x;
             const distY = p.y - start.y;
             const dir = calculateDirection(start, p, 5);
             const dirPrev = calculateDirection(prevPoint, p, 5);
-            if (dir !== NONE && dirPrev !== NONE && dirPrev !== dir && fifteen.getActiveElements(startIndex).length > 1) {
-                hasHiddenMove = fifteen.bigGo(dir, fifteen.getActiveElements(startIndex)[1]);
-                // drawHiddenElements
+            if (opositeDirection(dir, dirPrev)) {
+                const elems = fifteen.getActiveElements(startIndex);
+                if (elems.length > 1) {
+                    hasHiddenMove = fifteen.bigGo(dir, elems[1]);
+                    if (hasHiddenMove) {
+                        for (let i = 1; i < elems.length; ++i) {
+                            let index = elems[i];
+                            let cell = getCellByIndex(index);
+                            const height = box.offsetWidth / 4;
+                            if (HORIZONTAL.includes(dir)) {
+                                moveX(cell, height * Math.sign(distX));
+                            } else {
+                                moveY(cell, height * Math.sign(distY));
+                            }
+                            cell.style.transition = "transform " + animationTime + "ms linear";
+                        }
+                    }
+                }
             }
             if (fifteen.canGo(dir, startIndex)) {
                 for (let index of fifteen.getActiveElements(startIndex)) {
