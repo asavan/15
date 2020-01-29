@@ -95,24 +95,30 @@
             }
             return calculateDirection(startPoint, endPoint, 1);
         };
-        const _doMagic = function (startPosition, hole, direction) {
-            const distance = Math.abs(hole.x - startPosition.x + hole.y - startPosition.y);
-            let res = false;
-            for (let i = 0; i < distance; ++i) {
-                res |= _go(direction);
-            }
-            if (res) ++movesCount;
-            return res;
+
+        const getHoleDirection = function (index) {
+            const startPosition = getIndexesFromIndex(index);
+            const holePoint = getIndexesFromIndex(hole);
+            return direction(startPosition, holePoint);
         };
 
         const bigGo = function (dir, index) {
-            const startPosition = getIndexesFromIndex(index);
-            const holePoint = getIndexesFromIndex(hole);
-            const toHoleDirection = direction(startPosition, holePoint);
-            if (dir === toHoleDirection && toHoleDirection !== NONE) {
-                return _doMagic(startPosition, holePoint, toHoleDirection);
+            if (dir === NONE) {
+                return false;
             }
-            return false;
+            const toHoleDirection = getHoleDirection(index);
+            if (dir !== toHoleDirection) {
+                return false;
+            }
+            const elems = getActiveElements(index);
+            let res = false;
+            for (let i = elems.length - 1; i >= 0; --i) {
+                swap(elems[i], hole, order);
+                hole = elems[i];
+                res = true;
+            }
+            if (res) ++movesCount;
+            return res;
         };
 
         let hole = 15;
@@ -138,21 +144,16 @@
             return true;
         };
 
-        const canGo = function (direction, index) {
-            const index2 = hole + getIndexDiff(direction);
-            return index === index2;
-        };
-
-        const canGo2 = function (dir, index) {
-            const startPosition = getIndexesFromIndex(index);
-            const holePoint = getIndexesFromIndex(hole);
-            const toHoleDirection = direction(startPosition, holePoint);
-            if (dir === toHoleDirection && toHoleDirection !== NONE) {
-                return getActiveElements(index).length > 0;
+        const canGo = function (dir, index) {
+            if (!dir || dir === NONE) {
+                return false;
             }
-            return false;
+            const toHoleDirection = getHoleDirection(index);
+            if (dir !== toHoleDirection) {
+                return false;
+            }
+            return getActiveElements(index).length > 0;
         };
-
 
         const _go = function (direction) {
             if (!_canGo(direction)) {
@@ -236,7 +237,7 @@
             getElement: getElement,
             getMovesCount: getMovesCount,
             reinit: reinit,
-            canGo: canGo2,
+            canGo: canGo,
             getActiveElements: getActiveElements
         };
 
@@ -299,17 +300,10 @@
             return;
         }
         evt.preventDefault();
-        const touches = evt.changedTouches;
-
-        // check end point
-        const end = pointFromTouch(touches[0]);
-
+        const end = pointFromTouch(evt.changedTouches[0]);
         const direction = calculateDirection(startPoint, end);
 
         fifteen.bigGo(direction, startIndex);
-        // if (fifteen.bigGo(direction, startIndex) || hasHiddenMove) {
-        //
-        // }
         startPoint = null;
         startIndex = null;
         hasHiddenMove = false;
