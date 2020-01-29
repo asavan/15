@@ -242,9 +242,10 @@
 
     })();
 
-    let ongoingTouches = [];
     let startPositionText = "";
     let activeCell = null;
+    let startPoint = null;
+    let startIndex = null;
 
 
     function pointFromTouch(touch) {
@@ -261,12 +262,11 @@
         }
         activeCell = evt.target;
         activeCell.style.backgroundColor = "blue";
-        startPositionText = evt.target.textContent;
-        // log(fifteen.getActiveElements(getElementIndex(startPositionText)));
+        activeCell.style.transition = "";
+        startIndex = getElementIndex(evt.target.textContent);
 
         const touches = evt.changedTouches;
-        const start = pointFromTouch(touches[0]);
-        ongoingTouches.push(start);
+        startPoint = pointFromTouch(touches[0]);
     };
 
     const getElementIndex = function (elem) {
@@ -280,31 +280,34 @@
 
     function endMoving(activeCell) {
         activeCell.style.backgroundColor = "";
-        activeCell.style.transform = "translate(0px)";
+        activeCell.style.transform = "";
+        // activeCell.style.transition = "transform 300ms linear";
     }
 
     const handleEnd = function (evt) {
         if (activeCell) {
             endMoving(activeCell);
-            for (let index of fifteen.getActiveElements(getElementIndex(startPositionText))) {
+            for (let index of fifteen.getActiveElements(startIndex)) {
                 endMoving(getCellByIndex(index));
             }
         }
         activeCell = null;
-        if (ongoingTouches.length < 1) {
+        if (!startPoint) {
             return;
         }
         evt.preventDefault();
         const touches = evt.changedTouches;
 
-        const end = pointFromTouch(touches[touches.length - 1]);
-        const start = ongoingTouches[0];
+        // check end point
+        const end = pointFromTouch(touches[0]);
 
-        const direction = calculateDirection(start, end);
-        if (fifteen.bigGo(direction, getElementIndex(startPositionText))) {
-            drawAndCheck();
+        const direction = calculateDirection(startPoint, end);
+
+        if (fifteen.bigGo(direction, startIndex)) {
+            setTimeout(drawAndCheck, 0);
         }
-        ongoingTouches = [];
+        startPoint = null;
+        startIndex = null;
     };
 
     function log(msg) {
@@ -348,10 +351,11 @@
 
 
     function draw() {
-        for (let i = 0, tile; i < 16; i++) {
+        for (let i = 0; i < 16; i++) {
             const tile = box.childNodes[i];
             const val = fifteen.getElement(i);
             tile.textContent = val;
+            tile.style.transition = "";
             if (val) {
                 tile.className = 'cell';
             } else {
@@ -432,27 +436,19 @@
         e.preventDefault();
         const p = pointFromTouch(e.touches[0]);
         if (activeCell) {
-            const start = ongoingTouches[0];
+            const start = startPoint;
             const distX = p.x - start.x;
             const distY = p.y - start.y;
-            const dir = calculateDirection(start, p, 1);
-            if (fifteen.canGo(dir, getElementIndex(startPositionText))) {
+            const dir = calculateDirection(start, p, 10);
+            if (fifteen.canGo(dir, startIndex)) {
                 if (HORIZONTAL.includes(dir)) {
-                    for (let index of fifteen.getActiveElements(getElementIndex(startPositionText))) {
-                        // log(dir + " " + distX + " " + distY);
+                    for (let index of fifteen.getActiveElements(startIndex)) {
                         moveX(getCellByIndex(index), distX);
                     }
-                    // moveX(activeCell, distX);
                 } else {
-                    for (let index of fifteen.getActiveElements(getElementIndex(startPositionText))) {
+                    for (let index of fifteen.getActiveElements(startIndex)) {
                         moveY(getCellByIndex(index), distY);
                     }
-                    // moveY(activeCell, distY);
-                }
-            } else {
-                // moveX(activeCell, 0);
-                for (let index of fifteen.getActiveElements(getElementIndex(startPositionText))) {
-                    moveX(getCellByIndex(index), 0);
                 }
             }
         }
