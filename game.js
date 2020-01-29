@@ -242,10 +242,11 @@
 
     })();
 
-    let startPositionText = "";
     let activeCell = null;
     let startPoint = null;
+    let prevPoint = null;
     let startIndex = null;
+    let hasHiddenMove = false;
 
 
     function pointFromTouch(touch) {
@@ -267,6 +268,8 @@
 
         const touches = evt.changedTouches;
         startPoint = pointFromTouch(touches[0]);
+        prevPoint = startPoint;
+        hasHiddenMove = false;
     };
 
     const getElementIndex = function (elem) {
@@ -285,12 +288,12 @@
     }
 
     const handleEnd = function (evt) {
-        if (activeCell) {
-            endMoving(activeCell);
-            for (let index of fifteen.getActiveElements(startIndex)) {
-                endMoving(getCellByIndex(index));
-            }
-        }
+        // if (activeCell) {
+        //     endMoving(activeCell);
+        //     for (let index of fifteen.getActiveElements(startIndex)) {
+        //         endMoving(getCellByIndex(index));
+        //     }
+        // }
         activeCell = null;
         if (!startPoint) {
             return;
@@ -303,11 +306,14 @@
 
         const direction = calculateDirection(startPoint, end);
 
-        if (fifteen.bigGo(direction, startIndex)) {
-            setTimeout(drawAndCheck, 0);
-        }
+        fifteen.bigGo(direction, startIndex);
+        // if (fifteen.bigGo(direction, startIndex) || hasHiddenMove) {
+        //
+        // }
         startPoint = null;
         startIndex = null;
+        hasHiddenMove = false;
+        setTimeout(drawAndCheck, 50);
     };
 
     function log(msg) {
@@ -322,7 +328,6 @@
 
 
     const box = document.getElementsByClassName("box")[0]; // document.body.appendChild(document.createElement('div'));
-    // box.className = "box";
     const reload = document.getElementsByClassName("reload")[0];
 
     for (let i = 0; i < 16; i++) {
@@ -355,6 +360,8 @@
             const tile = box.childNodes[i];
             const val = fifteen.getElement(i);
             tile.textContent = val;
+            tile.style.backgroundColor = "";
+            tile.style.transform = "";
             tile.style.transition = "";
             if (val) {
                 tile.className = 'cell';
@@ -439,17 +446,23 @@
             const start = startPoint;
             const distX = p.x - start.x;
             const distY = p.y - start.y;
-            const dir = calculateDirection(start, p, 10);
+            const dir = calculateDirection(start, p, 5);
+            const dirPrev = calculateDirection(prevPoint, p, 5);
+            if (dir !== NONE && dirPrev !== NONE && dirPrev !== dir && fifteen.getActiveElements(startIndex).length > 1) {
+                hasHiddenMove = fifteen.bigGo(dir, fifteen.getActiveElements(startIndex)[1]);
+                // drawHiddenElements
+            }
             if (fifteen.canGo(dir, startIndex)) {
-                if (HORIZONTAL.includes(dir)) {
-                    for (let index of fifteen.getActiveElements(startIndex)) {
+                for (let index of fifteen.getActiveElements(startIndex)) {
+                    if (HORIZONTAL.includes(dir)) {
                         moveX(getCellByIndex(index), distX);
-                    }
-                } else {
-                    for (let index of fifteen.getActiveElements(startIndex)) {
+                    } else {
                         moveY(getCellByIndex(index), distY);
                     }
                 }
+                prevPoint = p;
+            } else {
+                activeCell.style.transform = "";
             }
         }
     }
