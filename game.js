@@ -206,7 +206,7 @@
         const getMovesCount = function () {
             return movesCount;
         };
-        reinit(false);
+        reinit(true);
         return {
             go: go,
             bigGo: bigGo,
@@ -507,7 +507,12 @@
     window.addEventListener('deviceorientation', handleOrientation);
 
     reload.addEventListener("click", reinitGame, false);
-
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    const isSolved = urlParams.get('solved');
+    if (isSolved) {
+        fifteen.reinit(false);
+    }
 
     drawAndCheck();
 })(window, document);
