@@ -329,13 +329,14 @@
         if (fifteen.canGo(direction, startIndex)) {
             for (let index of fifteen.getActiveElements(startIndex)) {
                 let cell = getCellByIndex(index);
-                const height = box.offsetWidth / 4;
                 if (HORIZONTAL.includes(direction)) {
+                    const height = box.offsetWidth / 4;
                     moveX(cell, height * directionSign(direction));
                 } else {
+                    const height = box.offsetHeight / 4;
                     moveY(cell, height * directionSign(direction));
                 }
-                cell.style.backgroundColor = "";
+                // cell.style.backgroundColor = "";
                 cell.style.transition = "transform " + animationTime + "ms linear";
             }
             return fifteen.bigGo(direction, startIndex);
@@ -477,13 +478,13 @@
 
     function moveX(activeCell, distX) {
         const height = box.offsetWidth / 4;
-        activeCell.style.backgroundColor = distX ? "green" : "";
+        // activeCell.style.backgroundColor = distX ? "green" : "";
         activeCell.style.transform = "translateX(" + maxTranslate(distX, height) + "px)";
     }
 
     function moveY(activeCell, distY) {
         const height = box.offsetHeight / 4;
-        activeCell.style.backgroundColor = "purple";
+        // activeCell.style.backgroundColor = "purple";
         activeCell.style.transform = "translateY(" + maxTranslate(distY, height) + "px)";
     }
 
@@ -497,7 +498,6 @@
     function drag(e) {
         e.preventDefault();
         const p = pointFromTouch(e.touches[0]);
-        const animationTime = 100;
         if (activeCell) {
             const start = startPoint;
             const distX = p.x - start.x;
@@ -553,7 +553,7 @@
     }
 
     function solvedInitGame() {
-        fifteen.reinit(true);
+        fifteen.reinit(false);
         drawAndCheck();
     }
 
