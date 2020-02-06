@@ -10,15 +10,16 @@
     const VERTICAL = [UP, DOWN];
 
     const settings = {
-        useTitleChanger : true,
-        useIconChanger : true,
+        useTitleChanger: true,
+        useIconChanger: true,
         useRandomSong: true,
         useMovingHighlight: true,
         useActiveHighlight: true,
-        useGamePad : true,
+        useGamePad: true,
         useSmoothAnimation: true,
-        useOnlyPushStrategy: true
-    }
+        useOnlyPushStrategy: true,
+        useRandomInit: true
+    };
 
     const songChooser = function () {
         function randomItem(items) {
@@ -34,7 +35,13 @@
         const getRandomSong = function () {
             return randomItem(songs);
         };
-        return {getSong: getRandomSong};
+        const getSong = function () {
+            if (settings.useRandomSong) {
+                return getRandomSong();
+            }
+            return SPARTAK;
+        };
+        return {getSong: getSong};
     }();
 
     function calculateDirection(startPoint, endPoint, threshold) {
@@ -234,14 +241,17 @@
         const getHolePosition = function () {
             return hole;
         };
-        reinit(true);
+        const publicReinit = function () {
+            reinit(settings.useRandomInit);
+        };
+        publicReinit();
         return {
             go: go,
             bigGo: bigGo,
             isCompleted: isCompleted,
             getElement: getElement,
             getMovesCount: getMovesCount,
-            reinit: reinit,
+            reinit: publicReinit,
             canGo: canGo,
             getActiveElements: getActiveElements,
             getHolePosition: getHolePosition
@@ -273,14 +283,26 @@
         settings.useMovingHighlight = true;
     };
 
+    const togglePushStrategy = function () {
+        settings.useOnlyPushStrategy = !settings.useOnlyPushStrategy;
+    };
+
     const codeHandler = function () {
         let currentCode = [];
 
         const codeMap = {
-            "314159": solvedInitGame,
-            "27182": reinitGame,
+            "314159": function () {
+                settings.useRandomInit = false;
+                reinitGame();
+            },
+            "27182": function () {
+                settings.useRandomInit = true;
+                reinitGame();
+            },
             "1111": disableHighlight,
-            "2222": enableHighlight
+            "2222": enableHighlight,
+            "5555": reinitGame,
+            "6666": togglePushStrategy
         };
 
         const addElem = function (elem) {
@@ -414,6 +436,9 @@
     const iconChanger = function () {
         const canvas = document.createElement('canvas');
         const link = document.getElementById('favicon');
+        if (!link) {
+            console.error("Can't find favicon");
+        }
         canvas.height = canvas.width = 16; // set the size
         const ctx = canvas.getContext('2d');
         ctx.fillStyle = '#000';
@@ -424,6 +449,10 @@
             }
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             ctx.fillText(fifteen.getMovesCount(), 2, 12);
+            if (!link) {
+                console.log("Can't find favicon");
+                return;
+            }
             link.href = canvas.toDataURL('image/png');
         };
         return {changeBage: changeBage}
@@ -444,7 +473,14 @@
                 tile.className = 'cell hole';
             }
         }
-        iconChanger.changeBage(fifteen.getMovesCount());
+        if (settings.useIconChanger) {
+            iconChanger.changeBage(fifteen.getMovesCount());
+        }
+        if (settings.useTitleChanger) {
+            if (fifteen.getMovesCount() > 0) {
+                document.title = fifteen.getMovesCount();
+            }
+        }
     }
 
     function drawAndCheck() {
@@ -533,7 +569,7 @@
             const distY = p.y - start.y;
             const dir = calculateDirection(start, p, 5);
             const dirPrev = calculateDirection(prevPoint, p, 5);
-            if (opositeDirection(dir, dirPrev)) {
+            if (settings.useOnlyPushStrategy && opositeDirection(dir, dirPrev)) {
                 const elems = fifteen.getActiveElements(startIndex);
                 if (elems.length > 1) {
                     hasHiddenMove = animateGo(dir, elems[1]);
@@ -577,12 +613,7 @@
     }
 
     function reinitGame() {
-        fifteen.reinit(true);
-        drawAndCheck();
-    }
-
-    function solvedInitGame() {
-        fifteen.reinit(false);
+        fifteen.reinit();
         drawAndCheck();
     }
 
@@ -599,7 +630,8 @@
     const urlParams = new URLSearchParams(queryString);
     const isSolved = urlParams.get('solved');
     if (isSolved) {
-        fifteen.reinit(false);
+        settings.useRandomInit = false;
+        fifteen.reinit();
     }
 
     drawAndCheck();
