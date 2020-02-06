@@ -9,9 +9,22 @@
     const HORIZONTAL = [LEFT, RIGHT];
     const VERTICAL = [UP, DOWN];
 
-    const SPARTAK = [300, 200, 300, 200, 150, 100, 150, 100, 150, 300, 100, 100, 100, 100, 150, 100, 200, 300, 120, 130, 120, 300];
-    const MORTAL = [100, 200, 100, 200, 100, 200, 100, 200, 100, 100, 100, 100, 100, 200, 100, 200, 100, 200, 100, 200, 100, 100, 100, 100, 100, 200, 100, 200, 100, 200, 100, 200, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 50, 50, 100, 800];
-    const IMPERIAL = [500, 110, 500, 110, 450, 110, 200, 110, 170, 40, 450, 110, 200, 110, 170, 40, 500];
+    const songChooser = function () {
+        function randomItem(items) {
+            return items[Math.floor(Math.random() * items.length)];
+        }
+
+        const SPARTAK = [300, 200, 300, 200, 150, 100, 150, 100, 150, 300, 100, 100, 100, 100, 150, 100, 200, 300, 120, 130, 120, 300];
+        const MORTAL = [100, 200, 100, 200, 100, 200, 100, 200, 100, 100, 100, 100, 100, 200, 100, 200, 100, 200, 100, 200, 100, 100, 100, 100, 100, 200, 100, 200, 100, 200, 100, 200, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 50, 50, 100, 800];
+        const IMPERIAL = [500, 110, 500, 110, 450, 110, 200, 110, 170, 40, 450, 110, 200, 110, 170, 40, 500];
+
+        const songs = [SPARTAK, MORTAL, IMPERIAL];
+
+        const getRandomSong = function () {
+            return randomItem(songs);
+        };
+        return {getSong: getRandomSong};
+    }();
 
     function calculateDirection(startPoint, endPoint, threshold) {
 
@@ -206,6 +219,10 @@
         const getMovesCount = function () {
             return movesCount;
         };
+
+        const getHolePosition = function () {
+            return hole;
+        };
         reinit(true);
         return {
             go: go,
@@ -215,7 +232,8 @@
             getMovesCount: getMovesCount,
             reinit: reinit,
             canGo: canGo,
-            getActiveElements: getActiveElements
+            getActiveElements: getActiveElements,
+            getHolePosition: getHolePosition
         };
 
     })();
@@ -225,7 +243,7 @@
     let prevPoint = null;
     let startIndex = null;
     let hasHiddenMove = false;
-
+    const animationTime = 100;
 
     function pointFromTouch(touch) {
         const point = {};
@@ -234,20 +252,51 @@
         return point;
     }
 
+    const codeHandler = function () {
+        let currentCode = [];
+
+        const codeMap = {
+            "314159": solvedInitGame,
+            "27182": reinitGame
+        };
+
+        const addElem = function (elem) {
+            currentCode.push(elem);
+        };
+        const execute = function () {
+            const str = currentCode.join("");
+            const f = codeMap[str];
+            if (f) {
+                f();
+            }
+            currentCode = [];
+        };
+        return {
+            addElem: addElem,
+            execute: execute
+        }
+    }();
+
     const handleStart = function (evt) {
         evt.preventDefault();
         if (!evt.target.classList.contains('cell') || activeCell) {
             return;
         }
         activeCell = evt.target;
-        activeCell.style.backgroundColor = "blue";
-        activeCell.style.transition = "";
         startIndex = getElementIndex(evt.target.textContent);
 
         const touches = evt.changedTouches;
         startPoint = pointFromTouch(touches[0]);
         prevPoint = startPoint;
         hasHiddenMove = false;
+
+        const elem = fifteen.getElement(startIndex);
+        if (elem !== 0) {
+            activeCell.classList.add("active");
+            codeHandler.addElem(elem);
+        } else {
+            codeHandler.execute();
+        }
     };
 
     const getElementIndex = function (elem) {
@@ -259,6 +308,45 @@
         return -1;
     };
 
+    function directionSign(direction) {
+        if (direction === UP) {
+            return -1;
+        }
+        if (direction === DOWN) {
+            return 1;
+        }
+        if (direction === LEFT) {
+            return -1;
+        }
+        if (direction === RIGHT) {
+            return 1;
+        }
+        return 0;
+    }
+
+
+    const animateGo = function (direction, startIndex) {
+        if (fifteen.canGo(direction, startIndex)) {
+            for (let index of fifteen.getActiveElements(startIndex)) {
+                let cell = getCellByIndex(index);
+                const height = box.offsetWidth / 4;
+                if (HORIZONTAL.includes(direction)) {
+                    moveX(cell, height * directionSign(direction));
+                } else {
+                    moveY(cell, height * directionSign(direction));
+                }
+                cell.style.backgroundColor = "";
+                cell.style.transition = "transform " + animationTime + "ms linear";
+            }
+            return fifteen.bigGo(direction, startIndex);
+        }
+        return false;
+    };
+
+    const animateGoKeyboard = function (direction) {
+        return animateGo(direction, fifteen.getHolePosition() + getIndexDiff(direction))
+    };
+
 
     const handleEnd = function (evt) {
         if (!startPoint) {
@@ -267,27 +355,8 @@
         evt.preventDefault();
         const p = pointFromTouch(evt.changedTouches[0]);
         const direction = calculateDirection(startPoint, p);
-        const animationTime = 100;
-
-        const start = startPoint;
-        const distX = p.x - start.x;
-        const distY = p.y - start.y;
-        if (fifteen.canGo(direction, startIndex)) {
-            for (let index of fifteen.getActiveElements(startIndex)) {
-                let cell = getCellByIndex(index);
-                const height = box.offsetWidth / 4;
-                if (HORIZONTAL.includes(direction)) {
-                    moveX(cell, height * Math.sign(distX));
-                } else {
-                    moveY(cell, height * Math.sign(distY));
-                }
-                cell.style.backgroundColor = "";
-                cell.style.transition = "transform " + animationTime + "ms linear";
-            }
-        }
-
+        animateGo(direction, startIndex);
         setTimeout(function () {
-            fifteen.bigGo(direction, startIndex);
             drawAndCheck();
             startPoint = null;
             startIndex = null;
@@ -355,14 +424,14 @@
     function drawAndCheck() {
         draw();
         if (fifteen.isCompleted()) {
-            box.style.backgroundColor = "red";
-            reload.className = "reload";
+            box.classList.add("win");
+            reload.classList.remove("hidden");
             navigator.vibrate(0);
-            navigator.vibrate(SPARTAK);
+            navigator.vibrate(songChooser.getSong());
         } else {
             navigator.vibrate(0);
-            reload.className = "reload hidden";
-            box.style.backgroundColor = "";
+            reload.classList.add("hidden");
+            box.classList.remove("win");
         }
     }
 
@@ -390,8 +459,8 @@
                     return NONE;
             }
         };
-        if (fifteen.go(keyKodeToDirection(e.keyCode))) {
-            drawAndCheck();
+        if (animateGoKeyboard(keyKodeToDirection(e.keyCode))) {
+            setTimeout(drawAndCheck, animationTime);
         }
     }
 
@@ -438,20 +507,7 @@
             if (opositeDirection(dir, dirPrev)) {
                 const elems = fifteen.getActiveElements(startIndex);
                 if (elems.length > 1) {
-                    hasHiddenMove = fifteen.bigGo(dir, elems[1]);
-                    if (hasHiddenMove) {
-                        for (let i = 1; i < elems.length; ++i) {
-                            let index = elems[i];
-                            let cell = getCellByIndex(index);
-                            const height = box.offsetWidth / 4;
-                            if (HORIZONTAL.includes(dir)) {
-                                moveX(cell, height * Math.sign(distX));
-                            } else {
-                                moveY(cell, height * Math.sign(distY));
-                            }
-                            cell.style.transition = "transform " + animationTime + "ms linear";
-                        }
-                    }
+                    hasHiddenMove = animateGo(dir, elems[1]);
                 }
             }
             if (fifteen.canGo(dir, startIndex)) {
@@ -477,23 +533,26 @@
         }
         let res = false;
         if (y > 55) {
-            res |= fifteen.bigGo(RIGHT, 0);
-            res |= fifteen.bigGo(RIGHT, 4);
-            res |= fifteen.bigGo(RIGHT, 8);
-            res |= fifteen.bigGo(RIGHT, 12);
+            for (let i = 0; i < 16; i += 4) {
+                res |= animateGo(RIGHT, i);
+            }
         }
         if (y < -55) {
-            res |= fifteen.bigGo(LEFT, 3);
-            res |= fifteen.bigGo(LEFT, 7);
-            res |= fifteen.bigGo(LEFT, 11);
-            res |= fifteen.bigGo(LEFT, 15);
+            for (let i = 3; i < 16; i += 4) {
+                res |= animateGo(LEFT, i);
+            }
         }
         if (res) {
-            requestAnimationFrame(drawAndCheck);
+            setTimeout(drawAndCheck, animationTime);
         }
     }
 
     function reinitGame() {
+        fifteen.reinit(true);
+        drawAndCheck();
+    }
+
+    function solvedInitGame() {
         fifteen.reinit(true);
         drawAndCheck();
     }

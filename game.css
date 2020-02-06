@@ -59,5 +59,16 @@ div > div {
 }
 
 .hole {
-    visibility: hidden;
+    // visibility: hidden;
+    border: none;
+    background-color: white;
+    color: transparent;
+}
+
+.win {
+    background-color: red;
+}
+
+.active {
+    background-color: blue;
 }
