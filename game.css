@@ -69,6 +69,11 @@ div > div {
     background-color: red;
 }
 
+.win .hole {
+    border: solid 2px red;
+    background-color: red;
+}
+
 .active {
     background-color: blue;
 }

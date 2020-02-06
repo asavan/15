@@ -1,5 +1,6 @@
-(function (window, document) {
-    "use strict"; // jshint ;_;
+"use strict"; // jshint ;_;
+function game(window, document, settings) {
+
     //Constants
     const LEFT = "left",
         RIGHT = "right",
@@ -9,17 +10,6 @@
     const HORIZONTAL = [LEFT, RIGHT];
     const VERTICAL = [UP, DOWN];
 
-    const settings = {
-        useTitleChanger: true,
-        useIconChanger: true,
-        useRandomSong: true,
-        useMovingHighlight: true,
-        useActiveHighlight: true,
-        useGamePad: true,
-        useSmoothAnimation: true,
-        useOnlyPushStrategy: true,
-        useRandomInit: true
-    };
 
     const songChooser = function () {
         function randomItem(items) {
@@ -287,6 +277,18 @@
         settings.useOnlyPushStrategy = !settings.useOnlyPushStrategy;
     };
 
+    function toggleSettings(idx) {
+        const key = Object.keys(settings)[idx];
+        if (!key) {
+            return;
+        }
+        const prop = settings[key];
+        if (prop == null) {
+            return;
+        }
+        settings[key] = !prop;
+    }
+
     const codeHandler = function () {
         let currentCode = [];
 
@@ -299,7 +301,7 @@
                 settings.useRandomInit = true;
                 reinitGame();
             },
-            "1111": disableHighlight,
+            "3333": disableHighlight,
             "2222": enableHighlight,
             "5555": reinitGame,
             "6666": togglePushStrategy
@@ -308,11 +310,17 @@
         const addElem = function (elem) {
             currentCode.push(elem);
         };
+
         const execute = function () {
             const str = currentCode.join("");
-            const f = codeMap[str];
-            if (f) {
-                f();
+            if (str.indexOf("111") === 0) {
+                const idx = parseInt(str.substr(3), 10);
+                toggleSettings(idx - 1);
+            } else {
+                const f = codeMap[str];
+                if (f) {
+                    f();
+                }
             }
             currentCode = [];
         };
@@ -488,10 +496,14 @@
         if (fifteen.isCompleted()) {
             box.classList.add("win");
             reload.classList.remove("hidden");
-            navigator.vibrate(0);
-            navigator.vibrate(songChooser.getSong());
+            if (settings.useVibration) {
+                navigator.vibrate(0);
+                navigator.vibrate(songChooser.getSong());
+            }
         } else {
-            navigator.vibrate(0);
+            if (settings.useVibration) {
+                navigator.vibrate(0);
+            }
             reload.classList.add("hidden");
             box.classList.remove("win");
         }
@@ -626,13 +638,43 @@
     window.addEventListener('deviceorientation', handleOrientation);
 
     reload.addEventListener("click", reinitGame, false);
-    const queryString = window.location.search;
-    const urlParams = new URLSearchParams(queryString);
-    const isSolved = urlParams.get('solved');
-    if (isSolved) {
-        settings.useRandomInit = false;
-        fifteen.reinit();
-    }
-
     drawAndCheck();
+}
+
+(function (window, document) {
+    const settings = {
+        useTitleChanger: true,
+        useIconChanger: true,
+        useRandomSong: true,
+        useMovingHighlight: true,
+        useActiveHighlight: true,
+        useGamePad: true,
+        useSmoothAnimation: true,
+        useOnlyPushStrategy: true,
+        useRandomInit: true,
+        useServiceWorker: true,
+        useVibration: true
+    };
+
+    try {
+        const queryString = window.location.search;
+        const urlParams = new URLSearchParams(queryString);
+        const isSolved = urlParams.get('solved');
+        if (isSolved) {
+            settings.useRandomInit = false;
+        }
+
+        if (settings.useServiceWorker && 'serviceWorker' in navigator) {
+            navigator.serviceWorker.register('./sw.js', {scope: './'});
+        }
+        if (settings.useGamePad && navigator.getGamepads) {
+            const script = document.createElement('script');
+            script.src = "gamepad.js";
+            document.body.appendChild(script);
+        }
+        game(window, document, settings);
+    } catch (e) {
+        console.log(e);
+    }
 })(window, document);
+

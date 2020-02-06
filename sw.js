@@ -16,7 +16,7 @@ function precache() {
             './game.js',
             './gamepad.js',
             './game.css',
-            './images/15-front.png',
+            './images/15.svg',
             './images/reload.svg'
         ]);
     });
