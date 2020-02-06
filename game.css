@@ -60,7 +60,7 @@ div > div {
 
 .hole {
     // visibility: hidden;
-    border: none;
+    border: solid 2px white;
     background-color: white;
     color: transparent;
 }
