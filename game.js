@@ -9,6 +9,17 @@
     const HORIZONTAL = [LEFT, RIGHT];
     const VERTICAL = [UP, DOWN];
 
+    const settings = {
+        useTitleChanger : true,
+        useIconChanger : true,
+        useRandomSong: true,
+        useMovingHighlight: true,
+        useActiveHighlight: true,
+        useGamePad : true,
+        useSmoothAnimation: true,
+        useOnlyPushStrategy: true
+    }
+
     const songChooser = function () {
         function randomItem(items) {
             return items[Math.floor(Math.random() * items.length)];
@@ -252,12 +263,24 @@
         return point;
     }
 
+    const disableHighlight = function () {
+        settings.useActiveHighlight = false;
+        settings.useMovingHighlight = false;
+    };
+
+    const enableHighlight = function () {
+        settings.useActiveHighlight = true;
+        settings.useMovingHighlight = true;
+    };
+
     const codeHandler = function () {
         let currentCode = [];
 
         const codeMap = {
             "314159": solvedInitGame,
-            "27182": reinitGame
+            "27182": reinitGame,
+            "1111": disableHighlight,
+            "2222": enableHighlight
         };
 
         const addElem = function (elem) {
@@ -292,7 +315,9 @@
 
         const elem = fifteen.getElement(startIndex);
         if (elem !== 0) {
-            activeCell.classList.add("active");
+            if (settings.useActiveHighlight) {
+                activeCell.classList.add("active");
+            }
             codeHandler.addElem(elem);
         } else {
             codeHandler.execute();
@@ -478,13 +503,17 @@
 
     function moveX(activeCell, distX) {
         const height = box.offsetWidth / 4;
-        // activeCell.style.backgroundColor = distX ? "green" : "";
+        if (settings.useMovingHighlight) {
+            activeCell.style.backgroundColor = "green";
+        }
         activeCell.style.transform = "translateX(" + maxTranslate(distX, height) + "px)";
     }
 
     function moveY(activeCell, distY) {
         const height = box.offsetHeight / 4;
-        // activeCell.style.backgroundColor = "purple";
+        if (settings.useMovingHighlight) {
+            activeCell.style.backgroundColor = "purple";
+        }
         activeCell.style.transform = "translateY(" + maxTranslate(distY, height) + "px)";
     }
 
