@@ -382,17 +382,19 @@ function game(window, document, settings) {
 
     const animateGo = function (direction, startIndex) {
         if (fifteen.canGo(direction, startIndex)) {
-            for (let index of fifteen.getActiveElements(startIndex)) {
-                let cell = getCellByIndex(index);
-                if (HORIZONTAL.includes(direction)) {
-                    const height = box.offsetWidth / 4;
-                    moveX(cell, height * directionSign(direction));
-                } else {
-                    const height = box.offsetHeight / 4;
-                    moveY(cell, height * directionSign(direction));
+            if (settings.useSmoothAnimation) {
+                for (let index of fifteen.getActiveElements(startIndex)) {
+                    let cell = getCellByIndex(index);
+                    if (HORIZONTAL.includes(direction)) {
+                        const height = box.offsetWidth / 4;
+                        moveX(cell, height * directionSign(direction));
+                    } else {
+                        const height = box.offsetHeight / 4;
+                        moveY(cell, height * directionSign(direction));
+                    }
+                    // cell.style.backgroundColor = "";
+                    cell.style.transition = "transform " + animationTime + "ms linear";
                 }
-                // cell.style.backgroundColor = "";
-                cell.style.transition = "transform " + animationTime + "ms linear";
             }
             return fifteen.bigGo(direction, startIndex);
         }
@@ -404,6 +406,14 @@ function game(window, document, settings) {
     };
 
 
+    function drawWithAnimation() {
+        if (settings.useSmoothAnimation) {
+            setTimeout(drawAndCheck, animationTime);
+        } else {
+            requestAnimationFrame(drawAndCheck);
+        }
+    }
+
     const handleEnd = function (evt) {
         if (!startPoint) {
             return;
@@ -412,13 +422,11 @@ function game(window, document, settings) {
         const p = pointFromTouch(evt.changedTouches[0]);
         const direction = calculateDirection(startPoint, p);
         animateGo(direction, startIndex);
-        setTimeout(function () {
-            drawAndCheck();
-            startPoint = null;
-            startIndex = null;
-            activeCell = null;
-            hasHiddenMove = false;
-        }, animationTime);
+        startPoint = null;
+        startIndex = null;
+        activeCell = null;
+        hasHiddenMove = false;
+        drawWithAnimation();
     };
 
     function log(msg) {
@@ -534,7 +542,7 @@ function game(window, document, settings) {
             }
         };
         if (animateGoKeyboard(keyKodeToDirection(e.keyCode))) {
-            setTimeout(drawAndCheck, animationTime);
+            drawWithAnimation();
         }
     }
 
@@ -574,6 +582,9 @@ function game(window, document, settings) {
 
     function drag(e) {
         e.preventDefault();
+        if(!settings.useSlideAnimation) {
+            return;
+        }
         const p = pointFromTouch(e.touches[0]);
         if (activeCell) {
             const start = startPoint;
@@ -603,30 +614,49 @@ function game(window, document, settings) {
     }
 
     function handleOrientation(event) {
+        if (!settings.useHorizontalOrientation && !settings.useVerticalOrientation) {
+            return;
+        }
         let y = event.gamma; // In degree in the range [-90,90]
 //        const orientation = window.screen.orientation.type;
         if (event.beta > 90) {
             y *= -1;
         }
         let res = false;
-        if (y > 55) {
-            for (let i = 0; i < 16; i += 4) {
-                res |= animateGo(RIGHT, i);
+        if (settings.useHorizontalOrientation) {
+            if (y > 55) {
+                for (let i = 0; i < 16; i += 4) {
+                    res |= animateGo(RIGHT, i);
+                }
+            }
+            if (y < -55) {
+                for (let i = 3; i < 16; i += 4) {
+                    res |= animateGo(LEFT, i);
+                }
             }
         }
-        if (y < -55) {
-            for (let i = 3; i < 16; i += 4) {
-                res |= animateGo(LEFT, i);
+        // TODO process vertical orientation
+        let x = event.beta;
+        if (settings.useVerticalOrientation) {
+            if (x > 55) {
+                for (let i = 12; i < 16; i += 1) {
+                    res |= animateGo(UP, i);
+                }
+            }
+            if (x < -55) {
+                for (let i = 0; i < 4; i += 1) {
+                    res |= animateGo(DOWN, i);
+                }
             }
         }
         if (res) {
-            setTimeout(drawAndCheck, animationTime);
+            drawWithAnimation();
         }
     }
 
     function reinitGame() {
         fifteen.reinit();
-        drawAndCheck();
+        drawWithAnimation();
     }
 
     box.addEventListener("touchstart", handleStart, false);
@@ -638,22 +668,25 @@ function game(window, document, settings) {
     window.addEventListener('deviceorientation', handleOrientation);
 
     reload.addEventListener("click", reinitGame, false);
-    drawAndCheck();
+    drawWithAnimation();
 }
 
 (function (window, document) {
     const settings = {
+        useRandomInit: true,
+        useSmoothAnimation: true,
+        useSlideAnimation: true,
         useTitleChanger: true,
-        useIconChanger: true,
+        useIconChanger: false,
         useRandomSong: true,
         useMovingHighlight: true,
         useActiveHighlight: true,
         useGamePad: true,
-        useSmoothAnimation: true,
         useOnlyPushStrategy: true,
-        useRandomInit: true,
         useServiceWorker: true,
-        useVibration: true
+        useVibration: true,
+        useHorizontalOrientation: true,
+        useVerticalOrientation: true
     };
 
     try {
