@@ -635,17 +635,16 @@ function game(window, document, settings) {
                 }
             }
         }
-        // TODO process vertical orientation
         let x = event.beta;
         if (settings.useVerticalOrientation) {
-            if (x > 55) {
-                for (let i = 12; i < 16; i += 1) {
-                    res |= animateGo(UP, i);
-                }
-            }
-            if (x < -55) {
+            if (x > 45) {
                 for (let i = 0; i < 4; i += 1) {
                     res |= animateGo(DOWN, i);
+                }
+            }
+            if (x < -45) {
+                for (let i = 12; i < 16; i += 1) {
+                    res |= animateGo(UP, i);
                 }
             }
         }
