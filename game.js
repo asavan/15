@@ -273,10 +273,6 @@ function game(window, document, settings) {
         settings.useMovingHighlight = true;
     };
 
-    const togglePushStrategy = function () {
-        settings.useOnlyPushStrategy = !settings.useOnlyPushStrategy;
-    };
-
     function toggleSettings(idx) {
         const key = Object.keys(settings)[idx];
         if (!key) {
@@ -293,18 +289,13 @@ function game(window, document, settings) {
         let currentCode = [];
 
         const codeMap = {
-            "314159": function () {
+            "777": function () {
                 settings.useRandomInit = false;
                 reinitGame();
             },
-            "27182": function () {
-                settings.useRandomInit = true;
-                reinitGame();
-            },
-            "3333": disableHighlight,
-            "2222": enableHighlight,
-            "5555": reinitGame,
-            "6666": togglePushStrategy
+            "333": disableHighlight,
+            "222": enableHighlight,
+            "555": reinitGame
         };
 
         const addElem = function (elem) {
@@ -637,12 +628,12 @@ function game(window, document, settings) {
         }
         let x = event.beta;
         if (settings.useVerticalOrientation) {
-            if (x > 45) {
+            if (x > 35) {
                 for (let i = 0; i < 4; i += 1) {
                     res |= animateGo(DOWN, i);
                 }
             }
-            if (x < -45) {
+            if (x < -35) {
                 for (let i = 12; i < 16; i += 1) {
                     res |= animateGo(UP, i);
                 }
@@ -678,14 +669,14 @@ function game(window, document, settings) {
         useTitleChanger: true,
         useIconChanger: false,
         useRandomSong: true,
-        useMovingHighlight: true,
-        useActiveHighlight: true,
+        useMovingHighlight: false,
+        useActiveHighlight: false,
         useGamePad: true,
         useOnlyPushStrategy: true,
         useServiceWorker: true,
         useVibration: true,
         useHorizontalOrientation: true,
-        useVerticalOrientation: true
+        useVerticalOrientation: false
     };
 
     try {
@@ -709,4 +700,3 @@ function game(window, document, settings) {
         console.log(e);
     }
 })(window, document);
-
