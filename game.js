@@ -255,6 +255,7 @@ function game(window, document, settings) {
     let startIndex = null;
     let hasHiddenMove = false;
     const animationTime = 100;
+    let wasWinning = false;
 
     function pointFromTouch(touch) {
         const point = {};
@@ -492,11 +493,12 @@ function game(window, document, settings) {
             box.classList.add("win");
             reload.classList.remove("hidden");
             if (settings.useVibration) {
-                navigator.vibrate(0);
+                wasWinning = true;
                 navigator.vibrate(songChooser.getSong());
             }
         } else {
-            if (settings.useVibration) {
+            if (settings.useVibration && wasWinning) {
+                wasWinning = false;
                 navigator.vibrate(0);
             }
             reload.classList.add("hidden");
@@ -545,11 +547,11 @@ function game(window, document, settings) {
     }
 
     function moveX(activeCell, distX) {
-        const height = box.offsetWidth / 4;
+        const width = box.offsetWidth / 4;
         if (settings.useMovingHighlight) {
             activeCell.style.backgroundColor = "green";
         }
-        activeCell.style.transform = "translateX(" + maxTranslate(distX, height) + "px)";
+        activeCell.style.transform = "translateX(" + maxTranslate(distX, width) + "px)";
     }
 
     function moveY(activeCell, distY) {
@@ -691,7 +693,13 @@ function game(window, document, settings) {
             script.src = "gamepad.js";
             document.body.appendChild(script);
         }
-        game(window, document, settings);
+        if( document.readyState !== 'loading' ) {
+            game(window, document, settings);
+        } else {
+            document.addEventListener("DOMContentLoaded", function (event) {
+                game(window, document, settings);
+            });
+        }
     } catch (e) {
         console.log(e);
     }
