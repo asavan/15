@@ -263,14 +263,9 @@ function game(window, document, settings) {
         return point;
     }
 
-    const disableHighlight = function () {
-        settings.useActiveHighlight = false;
-        settings.useMovingHighlight = false;
-    };
-
-    const enableHighlight = function () {
-        settings.useActiveHighlight = true;
-        settings.useMovingHighlight = true;
+    const switchHighlight = function () {
+        settings.useActiveHighlight = !settings.useActiveHighlight;
+        settings.useMovingHighlight = !settings.useMovingHighlight;
     };
 
     function toggleSettings(idx) {
@@ -293,13 +288,14 @@ function game(window, document, settings) {
                 settings.useRandomInit = false;
                 reinitGame();
             },
-            "333": disableHighlight,
-            "222": enableHighlight,
+            "222": switchHighlight,
             "555": reinitGame
         };
 
         const addElem = function (elem) {
-            currentCode.push(elem);
+            if (currentCode.length < 10) {
+                currentCode.push(elem);
+            }
         };
 
         const execute = function () {
