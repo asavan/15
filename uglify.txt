@@ -1,0 +1,1 @@
+uglifyjs gamepad.js -o gamepad4.min.js -c drop_console -m --mangle-props
