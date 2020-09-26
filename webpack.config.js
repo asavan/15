@@ -10,6 +10,7 @@ const HashOutput = require('webpack-plugin-hash-output');
 const {InjectManifest} = require('workbox-webpack-plugin');
 const ScriptExtHtmlWebpackPlugin = require('script-ext-html-webpack-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
+const HTMLInlineCSSWebpackPlugin = require("html-inline-css-webpack-plugin").default;
 
 // process.traceDeprecation = true;
 
@@ -75,6 +76,7 @@ module.exports = (env, argv) => {
             new MiniCssExtractPlugin({
                 filename: devMode ? '[name].css' : '[name].[contenthash].min.css'
             }),
+            new HTMLInlineCSSWebpackPlugin(),
             ...(devMode ? [] : [new InjectManifest({
                 swDest: './sw.js',
                 swSrc: './src/sw.js',
