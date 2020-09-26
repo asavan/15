@@ -1,63 +1,15 @@
 "use strict"; // jshint ;_;
+import {initField, pointFromEvent, log, keyKodeToDirection} from './helper.js'
+import iconChangerFunc from './icon_changer.js'
+import codeHandlerFunc from './secret_codes.js'
+import songChooserFunc from './vibro.js'
+import handleOrientationFunc from './orientation.js'
+import {moveX, moveY, draw, getCellByIndex} from './draw.js'
+import {LEFT, RIGHT, DOWN, UP, HORIZONTAL, NONE, calculateDirection} from './core.js'
+
 export default function game(window, document, settings) {
 
-    //Constants
-    const LEFT = "left",
-        RIGHT = "right",
-        UP = "up",
-        DOWN = "down",
-        NONE = "";
-    const HORIZONTAL = [LEFT, RIGHT];
-    const VERTICAL = [UP, DOWN];
-
-
-    const songChooser = function () {
-        function randomItem(items) {
-            return items[Math.floor(Math.random() * items.length)];
-        }
-
-        const SPARTAK = [300, 200, 300, 200, 150, 100, 150, 100, 150, 300, 100, 100, 100, 100, 150, 100, 200, 300, 120, 130, 120, 300];
-        const MORTAL = [100, 200, 100, 200, 100, 200, 100, 200, 100, 100, 100, 100, 100, 200, 100, 200, 100, 200, 100, 200, 100, 100, 100, 100, 100, 200, 100, 200, 100, 200, 100, 200, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 50, 50, 100, 800];
-        const IMPERIAL = [500, 110, 500, 110, 450, 110, 200, 110, 170, 40, 450, 110, 200, 110, 170, 40, 500];
-
-        const songs = [SPARTAK, MORTAL, IMPERIAL];
-
-        const getRandomSong = function () {
-            return randomItem(songs);
-        };
-        const getSong = function () {
-            if (settings.useRandomSong) {
-                return getRandomSong();
-            }
-            return SPARTAK;
-        };
-        return {getSong: getSong};
-    }();
-
-    function calculateDirection(startPoint, endPoint, threshold) {
-
-        const tr = threshold || 30;
-        const x = endPoint.x - startPoint.x;
-        const y = endPoint.y - startPoint.y;
-
-        if (Math.abs(x) + Math.abs(y) < tr) {
-            return NONE;
-        }
-
-        if (Math.abs(x) > Math.abs(y)) {
-            if (x < 0) {
-                return LEFT;
-            } else {
-                return RIGHT;
-            }
-        } else {
-            if (y < 0) {
-                return UP;
-            } else {
-                return DOWN;
-            }
-        }
-    }
+    const songChooser = songChooserFunc(settings);
 
     const getIndexDiff = function (direction) {
         if (direction === UP) {
@@ -257,71 +209,14 @@ export default function game(window, document, settings) {
     const animationTime = 100;
     let wasWinning = false;
 
-    function pointFromTouch(touch) {
-        const point = {};
-        point.x = touch.pageX || touch.clientX;
-        point.y = touch.pageY || touch.clientY;
-        return point;
-    }
-
-    const switchHighlight = function () {
-        settings.useActiveHighlight = !settings.useActiveHighlight;
-        settings.useMovingHighlight = !settings.useMovingHighlight;
-    };
-
-    function toggleSettings(idx) {
-        const key = Object.keys(settings)[idx];
-        if (!key) {
-            return;
-        }
-        const prop = settings[key];
-        if (prop == null) {
-            return;
-        }
-        settings[key] = !prop;
-    }
-
-    const codeHandler = function () {
-        let currentCode = [];
-
-        const codeMap = {
-            "777": function () {
-                settings.useRandomInit = false;
-                reinitGame();
-            },
-            "222": switchHighlight,
-            "555": reinitGame
-        };
-
-        const addElem = function (elem) {
-            if (currentCode.length < 10) {
-                currentCode.push(elem);
+    const codeHandler = codeHandlerFunc(settings, reinitGame);
+    const getElementIndex = function (elem) {
+        for (let i = 0; i < 16; ++i) {
+            if (fifteen.getElement(i) === +elem) {
+                return i;
             }
-        };
-
-        const execute = function () {
-            const str = currentCode.join("");
-            if (str.indexOf("111") === 0) {
-                const idx = parseInt(str.substr(3), 10);
-                toggleSettings(idx - 1);
-            } else {
-                const f = codeMap[str];
-                if (f) {
-                    f();
-                }
-            }
-            currentCode = [];
-        };
-        return {
-            addElem: addElem,
-            execute: execute
         }
-    }();
-
-    const pointFromEvent = function (evt) {
-        const touches = evt.changedTouches;
-        const eventPointer = touches ? touches[0] : evt;
-        return pointFromTouch(eventPointer);
+        return -1;
     };
 
     const handleStart = function (evt) {
@@ -347,15 +242,6 @@ export default function game(window, document, settings) {
         }
     };
 
-    const getElementIndex = function (elem) {
-        for (let i = 0; i < 16; ++i) {
-            if (fifteen.getElement(i) === +elem) {
-                return i;
-            }
-        }
-        return -1;
-    };
-
     function directionSign(direction) {
         if (direction === UP) {
             return -1;
@@ -377,13 +263,13 @@ export default function game(window, document, settings) {
         if (fifteen.canGo(direction, startIndex)) {
             if (settings.useSmoothAnimation) {
                 for (let index of fifteen.getActiveElements(startIndex)) {
-                    let cell = getCellByIndex(index);
+                    const cell = getCellByIndex(index, box);
                     if (HORIZONTAL.includes(direction)) {
-                        const height = box.offsetWidth / 4;
-                        moveX(cell, height * directionSign(direction));
+                        const width = box.offsetWidth / 4;
+                        moveX(cell, width * directionSign(direction), box, settings);
                     } else {
                         const height = box.offsetHeight / 4;
-                        moveY(cell, height * directionSign(direction));
+                        moveY(cell, height * directionSign(direction), box, settings);
                     }
                     // cell.style.backgroundColor = "";
                     cell.style.transition = "transform " + animationTime + "ms linear";
@@ -422,87 +308,18 @@ export default function game(window, document, settings) {
         drawWithAnimation();
     };
 
-    function log(msg) {
-        let p = document.getElementById('log');
-        if (!p) {
-            p = document.body.appendChild(document.createElement('div'));
-            p.setAttribute("id", "log");
-        }
-        p.innerHTML = msg + "\n" + p.innerHTML;
-        console.log(msg)
-    }
-
 
     const box = document.getElementsByClassName("box")[0]; // document.body.appendChild(document.createElement('div'));
     const reload = document.getElementsByClassName("reload")[0];
     const btnInstall = document.getElementsByClassName('install')[0];
 
 
-    for (let i = 0; i < 16; i++) {
-        const cell = document.createElement('div');
-        cell.className = 'cell';
-        box.appendChild(cell);
-    }
+    initField(16, 'cell', box, document);
+    const iconChanger = iconChangerFunc(document);
 
-    const iconChanger = function () {
-        const canvas = document.createElement('canvas');
-        const link = document.getElementById('favicon');
-        if (!link) {
-            console.error("Can't find favicon");
-        }
-        canvas.height = canvas.width = 16; // set the size
-        const ctx = canvas.getContext('2d');
-        ctx.fillStyle = '#000';
-
-        const changeBage = function (num) {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.fillText(num, 2, 12);
-            if (!link) {
-                console.log("Can't find favicon");
-                return;
-            }
-            link.href = canvas.toDataURL('image/png');
-        };
-        return {changeBage: changeBage}
-    }();
-
-
-    function showCount() {
-        if (fifteen.getMovesCount() <= 0) {
-            return;
-        }
-        if (settings.useIconChanger) {
-            iconChanger.changeBage(fifteen.getMovesCount());
-        }
-        if (settings.useBageChanger && navigator.setAppBadge) {
-            navigator.setAppBadge(fifteen.getMovesCount());
-        }
-        if (settings.useTitleChanger) {
-            if (fifteen.getMovesCount() > 0) {
-                document.title = fifteen.getMovesCount();
-            }
-        }
-    }
-
-    function draw() {
-        for (let i = 0; i < 16; i++) {
-            const tile = box.childNodes[i];
-            const val = fifteen.getElement(i);
-            tile.textContent = val;
-            tile.style.backgroundColor = "";
-            tile.style.transform = "";
-            tile.style.transition = "";
-            if (val) {
-                tile.className = 'cell';
-            } else {
-                tile.className = 'cell hole';
-            }
-        }
-        showCount();
-    }
 
     function drawAndCheck() {
-        draw();
+        draw(box, fifteen, iconChanger, settings);
         if (fifteen.isCompleted()) {
             box.classList.add("win");
             reload.classList.remove("hidden");
@@ -523,59 +340,11 @@ export default function game(window, document, settings) {
 
     function onKeyPress(e) {
         // e.preventDefault();
-        const keyKodeToDirection = function (keyCode) {
-            switch (keyCode) {
-                case 37:
-                case 72:
-                case 65:
-                    return LEFT;
-                case 39:
-                case 76:
-                case 68:
-                    return RIGHT;
-                case 38:
-                case 75:
-                case 87:
-                    return UP;
-                case 40:
-                case 74:
-                case 83:
-                    return DOWN;
-                default:
-                    return NONE;
-            }
-        };
         if (animateGoKeyboard(keyKodeToDirection(e.keyCode))) {
             drawWithAnimation();
         }
     }
 
-    function maxTranslate(maxOffset, offset) {
-        if (maxOffset >= 0) {
-            return Math.min(maxOffset, offset);
-        }
-        return Math.max(maxOffset, -offset);
-    }
-
-    function getCellByIndex(i) {
-        return box.childNodes[i];
-    }
-
-    function moveX(activeCell, distX) {
-        const width = box.offsetWidth / 4;
-        if (settings.useMovingHighlight) {
-            activeCell.style.backgroundColor = "green";
-        }
-        activeCell.style.transform = "translateX(" + maxTranslate(distX, width) + "px)";
-    }
-
-    function moveY(activeCell, distY) {
-        const height = box.offsetHeight / 4;
-        if (settings.useMovingHighlight) {
-            activeCell.style.backgroundColor = "purple";
-        }
-        activeCell.style.transform = "translateY(" + maxTranslate(distY, height) + "px)";
-    }
 
     const opositeDirection = function (dir1, dir2) {
         const index1 = getIndexDiff(dir1);
@@ -589,72 +358,38 @@ export default function game(window, document, settings) {
         if (!settings.useSlideAnimation) {
             return;
         }
+        if (!activeCell) {
+            return;
+        }
         const p = pointFromEvent(e);
-        if (activeCell) {
-            const start = startPoint;
-            const distX = p.x - start.x;
-            const distY = p.y - start.y;
-            const dir = calculateDirection(start, p, 5);
-            const dirPrev = calculateDirection(prevPoint, p, 5);
-            if (settings.useOnlyPushStrategy && opositeDirection(dir, dirPrev)) {
-                const elems = fifteen.getActiveElements(startIndex);
-                if (elems.length > 1) {
-                    hasHiddenMove = animateGo(dir, elems[1]);
+        const start = startPoint;
+        const distX = p.x - start.x;
+        const distY = p.y - start.y;
+        const dir = calculateDirection(start, p, 5);
+        const dirPrev = calculateDirection(prevPoint, p, 5);
+        if (settings.useOnlyPushStrategy && opositeDirection(dir, dirPrev)) {
+            const elems = fifteen.getActiveElements(startIndex);
+            if (elems.length > 1) {
+                animateGo(dir, elems[1]);
+            }
+        }
+        if (fifteen.canGo(dir, startIndex)) {
+            for (let index of fifteen.getActiveElements(startIndex)) {
+                const cell = getCellByIndex(index, box);
+                if (HORIZONTAL.includes(dir)) {
+                    moveX(cell, distX, box, settings);
+                } else {
+                    moveY(cell, distY, box, settings);
                 }
             }
-            if (fifteen.canGo(dir, startIndex)) {
-                for (let index of fifteen.getActiveElements(startIndex)) {
-                    if (HORIZONTAL.includes(dir)) {
-                        moveX(getCellByIndex(index), distX);
-                    } else {
-                        moveY(getCellByIndex(index), distY);
-                    }
-                }
-                prevPoint = p;
-            } else {
-                activeCell.style.transform = "";
-            }
+            prevPoint = p;
+        } else {
+            activeCell.style.transform = "";
         }
     }
 
     function handleOrientation(event) {
-        if (!settings.useHorizontalOrientation && !settings.useVerticalOrientation) {
-            return;
-        }
-        let y = event.gamma; // In degree in the range [-90,90]
-//        const orientation = window.screen.orientation.type;
-        if (event.beta > 90) {
-            y *= -1;
-        }
-        let res = false;
-        if (settings.useHorizontalOrientation) {
-            if (y > 55) {
-                for (let i = 0; i < 16; i += 4) {
-                    res |= animateGo(RIGHT, i);
-                }
-            }
-            if (y < -55) {
-                for (let i = 3; i < 16; i += 4) {
-                    res |= animateGo(LEFT, i);
-                }
-            }
-        }
-        let x = event.beta;
-        if (settings.useVerticalOrientation) {
-            if (x > 35) {
-                for (let i = 0; i < 4; i += 1) {
-                    res |= animateGo(DOWN, i);
-                }
-            }
-            if (x < -35) {
-                for (let i = 12; i < 16; i += 1) {
-                    res |= animateGo(UP, i);
-                }
-            }
-        }
-        if (res) {
-            drawWithAnimation();
-        }
+        handleOrientationFunc(event, settings, drawWithAnimation, animateGo);
     }
 
     function reinitGame() {

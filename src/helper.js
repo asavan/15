@@ -1,5 +1,7 @@
 "use strict";
-export function install(window, document, settings) {
+import {DOWN, LEFT, RIGHT, UP} from "./core.js";
+
+function install(window, document, settings) {
     const btnAdd = document.getElementById('butInstall');
     let deferredPrompt;
     btnAdd.addEventListener('click', (e) => {
@@ -92,5 +94,51 @@ export function initField(fieldSize, className, elem, document) {
         const cell = document.createElement('div');
         cell.className = className;
         elem.appendChild(cell);
+    }
+}
+
+export function log(msg, document) {
+    let p = document.getElementById('log');
+    if (!p) {
+        p = document.body.appendChild(document.createElement('div'));
+        p.setAttribute("id", "log");
+    }
+    p.innerHTML = msg + "\n" + p.innerHTML;
+    console.log(msg)
+}
+
+function pointFromTouch(touch) {
+    const point = {};
+    point.x = touch.pageX || touch.clientX;
+    point.y = touch.pageY || touch.clientY;
+    return point;
+}
+
+export function pointFromEvent(evt) {
+    const touches = evt.changedTouches;
+    const eventPointer = touches ? touches[0] : evt;
+    return pointFromTouch(eventPointer);
+}
+
+export function keyKodeToDirection(keyCode) {
+    switch (keyCode) {
+        case 37:
+        case 72:
+        case 65:
+            return LEFT;
+        case 39:
+        case 76:
+        case 68:
+            return RIGHT;
+        case 38:
+        case 75:
+        case 87:
+            return UP;
+        case 40:
+        case 74:
+        case 83:
+            return DOWN;
+        default:
+            return NONE;
     }
 }
