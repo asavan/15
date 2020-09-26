@@ -83,6 +83,7 @@ module.exports = (env, argv) => {
                     /CNAME$/,
                     /\.nojekyll$/,
                     /_config\.yml$/,
+                    /^.*well-known\/.*$/,
                 ]
             })]),
             new webpack.DefinePlugin({
