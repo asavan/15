@@ -1,6 +1,6 @@
 "use strict";
 function toggleSettings(idx, settings) {
-    const key = Object.keys(settings)[idx];
+    const key = typeof idx === "number" ? Object.keys(settings)[idx] : idx;
     if (!key) {
         return;
     }

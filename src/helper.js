@@ -1,5 +1,5 @@
 "use strict";
-import {DOWN, LEFT, RIGHT, UP} from "./core.js";
+import {DOWN, LEFT, RIGHT, UP, NONE} from "./core.js";
 
 function install(window, document, settings) {
     const btnAdd = document.getElementById('butInstall');
