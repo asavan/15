@@ -2,6 +2,7 @@
   "name": "fifteenpuzzle",
   "version": "1.0.0",
   "private": true,
+  "type": "module",
   "description": "asavan 15 game",
   "scripts": {
     "start": "webpack serve --mode development",
