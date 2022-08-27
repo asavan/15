@@ -14,8 +14,8 @@ const HTMLInlineCSSWebpackPlugin = require("html-inline-css-webpack-plugin").def
 // process.traceDeprecation = true;
 
 const getLocalExternalIP = () => [].concat(...Object.values(os.networkInterfaces()))
-    .filter(details => details.family === 'IPv4' && !details.internal)
-    .pop().address
+    .filter(details => (details.family === 'IPv4' || details.family === 4) && !details.internal)
+    .pop()?.address
 
 module.exports = (env, argv) => {
     const devMode = !argv || (argv.mode !== 'production');
