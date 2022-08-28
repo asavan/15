@@ -1,5 +1,5 @@
 "use strict"; // jshint ;_;
-import {initField, pointFromEvent, keyKodeToDirection} from './helper.js'
+import {initField, pointFromEvent, keyToDirection} from './helper.js'
 import iconChangerFunc from './icon_changer.js'
 import codeHandlerFunc from './secret_codes.js'
 import songChooserFunc from './vibro.js'
@@ -88,7 +88,7 @@ export default function game(window, document, settings) {
 
     function onKeyPress(e) {
         // e.preventDefault();
-        if (animateGoKeyboard(keyKodeToDirection(e.keyCode))) {
+        if (animateGoKeyboard(keyToDirection(e.code))) {
             drawWithAnimation();
         }
     }

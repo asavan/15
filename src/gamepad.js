@@ -32,6 +32,7 @@ const directions = {
     RESTART: 4
 };
 const stateToKeyCodeMap_ = [37, 39, 38, 40, 84];
+const stateToKeysMap_ = ["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"];
 
 
 const AXIS_THRESHOLD = .75;
@@ -109,8 +110,7 @@ const updateDisplay = function (gamepad) {
         // console.log(gamepad.axes);
         return;
     }
-    const event = new Event('keydown', {"bubbles":true, "cancelable":true});
-    event.keyCode = stateToKeyCodeMap_[state];
+    const event = new KeyboardEvent('keydown', {"code":stateToKeysMap_[state]});
     window.dispatchEvent(event);
 };
 

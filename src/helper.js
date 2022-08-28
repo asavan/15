@@ -125,23 +125,23 @@ export function pointFromEvent(evt) {
     return pointFromTouch(eventPointer);
 }
 
-export function keyKodeToDirection(keyCode) {
-    switch (keyCode) {
-        case 37:
-        case 72:
-        case 65:
+export function keyToDirection(key) {
+    switch (key) {
+        case "ArrowLeft":
+        case "KeyH":
+        case "KeyA":
             return LEFT;
-        case 39:
-        case 76:
-        case 68:
+        case "ArrowRight":
+        case "KeyL":
+        case "KeyD":
             return RIGHT;
-        case 38:
-        case 75:
-        case 87:
+        case "ArrowUp":
+        case "KeyK":
+        case "KeyW":
             return UP;
-        case 40:
-        case 74:
-        case 83:
+        case "ArrowDown":
+        case "KeyJ":
+        case "KeyS":
             return DOWN;
         default:
             return NONE;
