@@ -56,7 +56,12 @@ function starter(window, document, settings, f) {
         }
     }
     if (settings.useGamePad && navigator.getGamepads) {
-        import("./gamepad.js").then(gamepad => {});
+        import("./gamepad.js").then(gamepad => {
+            setTimeout(function () {
+                gamepad.default.init();
+            }, 500);
+
+        });
     }
     f(window, document, settings);
 }
