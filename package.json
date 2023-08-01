@@ -1,6 +1,6 @@
 {
   "name": "fifteenpuzzle",
-  "version": "1.1.16",
+  "version": "1.1.17",
   "private": true,
   "type": "module",
   "description": "asavan 15 game",
@@ -9,18 +9,17 @@
     "build": "webpack --mode production"
   },
   "devDependencies": {
-    "clean-webpack-plugin": "^4.0.0",
     "copy-webpack-plugin": "^11.0.0",
-    "css-loader": "^6.7.1",
-    "css-minimizer-webpack-plugin": "^4.0.0",
-    "html-inline-css-webpack-plugin": "^1.11.1",
-    "html-webpack-plugin": "^5.5.0",
-    "mini-css-extract-plugin": "^2.6.1",
-    "npm-check-updates": "^16.0.6",
-    "terser-webpack-plugin": "^5.3.5",
-    "webpack": "^5.74.0",
-    "webpack-cli": "^4.10.0",
-    "webpack-dev-server": "^4.10.0",
-    "workbox-webpack-plugin": "^6.5.4"
+    "css-loader": "^6.8.1",
+    "css-minimizer-webpack-plugin": "^5.0.1",
+    "html-inline-css-webpack-plugin": "^1.11.2",
+    "html-webpack-plugin": "^5.5.3",
+    "mini-css-extract-plugin": "^2.7.6",
+    "npm-check-updates": "^16.10.17",
+    "terser-webpack-plugin": "^5.3.9",
+    "webpack": "^5.88.2",
+    "webpack-cli": "^5.1.4",
+    "webpack-dev-server": "^4.15.1",
+    "workbox-webpack-plugin": "^7.0.0"
   }
 }

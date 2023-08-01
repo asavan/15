@@ -1,6 +1,7 @@
 import path from 'path'
 import os from 'os'
 import { fileURLToPath } from 'url';
+
 import HtmlWebpackPlugin from 'html-webpack-plugin'
 import MiniCssExtractPlugin from 'mini-css-extract-plugin'
 import CopyPlugin from 'copy-webpack-plugin'
@@ -9,7 +10,6 @@ import webpack from 'webpack'
 
 import TerserJSPlugin from 'terser-webpack-plugin';
 import CssMinimizerPlugin from 'css-minimizer-webpack-plugin';
-import {CleanWebpackPlugin} from 'clean-webpack-plugin';
 import {InjectManifest} from 'workbox-webpack-plugin';
 
 import HTMLInlineCSSWebpackPlugin from 'html-inline-css-webpack-plugin';
@@ -29,6 +29,7 @@ const webConfig = (env, argv) => {
         output: {
             path: path.resolve(dirname, "docs"),
             filename: devMode ? "[name].js" : "[name].[contenthash].min.js",
+            clean: true
         },
         module: {
             rules: [
@@ -51,7 +52,6 @@ const webConfig = (env, argv) => {
             }), new CssMinimizerPlugin()],
         },
         plugins: [
-            new CleanWebpackPlugin(),
             new HtmlWebpackPlugin({
                 template: "./src/index.html",
                 minify: false,
