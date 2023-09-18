@@ -18,5 +18,5 @@ export default function iconChanger (document) {
         }
         link.href = canvas.toDataURL('image/png');
     };
-    return {changeBage: changeBage}
+    return {changeBage: changeBage};
 }

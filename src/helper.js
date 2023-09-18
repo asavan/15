@@ -5,6 +5,7 @@ function install(window, document, settings) {
     const btnAdd = document.getElementById('butInstall');
     let deferredPrompt;
     btnAdd.addEventListener('click', (e) => {
+        e.preventDefault();
         // hide our user interface that shows our A2HS button
         // btnAdd.setAttribute('disabled', true);
         btnAdd.classList.add("hidden");
@@ -31,9 +32,9 @@ function install(window, document, settings) {
 
 function stringToBoolean(string) {
     switch(string.toLowerCase().trim()){
-        case "true": case "yes": case "1": return true;
-        case "false": case "no": case "0": case null: return false;
-        default: return Boolean(string);
+    case "true": case "yes": case "1": return true;
+    case "false": case "no": case "0": case null: return false;
+    default: return Boolean(string);
     }
 }
 
@@ -49,6 +50,7 @@ function starter(window, document, settings, f) {
             settings[key] = value;
         }
     }
+    // eslint-disable-next-line no-undef
     if (__USE_SERVICE_WORKERS__) {
         if (settings.useServiceWorker && 'serviceWorker' in navigator) {
             navigator.serviceWorker.register('./sw.js', {scope: './'});
@@ -70,7 +72,7 @@ function launch(f, window, document, settings, afterUrlParse) {
     if (document.readyState !== 'loading') {
         f(window, document, settings, afterUrlParse);
     } else {
-        document.addEventListener("DOMContentLoaded", function (event) {
+        document.addEventListener("DOMContentLoaded", function () {
             f(window, document, settings, afterUrlParse);
         });
     }
@@ -83,7 +85,7 @@ export function launchWithUrlParse(window, document, settings, afterUrlParse) {
 export const playSound = (elem) => {
     if (!elem) return;
     elem.play();
-}
+};
 
 function declOfNum(number, titles) {
     const cases = [2, 0, 1, 1, 1, 2];
@@ -109,7 +111,7 @@ export function log(msg, document) {
         p.setAttribute("id", "log");
     }
     p.innerHTML = msg + "\n" + p.innerHTML;
-    console.log(msg)
+    console.log(msg);
 }
 
 function pointFromTouch(touch) {
@@ -127,23 +129,23 @@ export function pointFromEvent(evt) {
 
 export function keyToDirection(key) {
     switch (key) {
-        case "ArrowLeft":
-        case "KeyH":
-        case "KeyA":
-            return LEFT;
-        case "ArrowRight":
-        case "KeyL":
-        case "KeyD":
-            return RIGHT;
-        case "ArrowUp":
-        case "KeyK":
-        case "KeyW":
-            return UP;
-        case "ArrowDown":
-        case "KeyJ":
-        case "KeyS":
-            return DOWN;
-        default:
-            return NONE;
+    case "ArrowLeft":
+    case "KeyH":
+    case "KeyA":
+        return LEFT;
+    case "ArrowRight":
+    case "KeyL":
+    case "KeyD":
+        return RIGHT;
+    case "ArrowUp":
+    case "KeyK":
+    case "KeyW":
+        return UP;
+    case "ArrowDown":
+    case "KeyJ":
+    case "KeyS":
+        return DOWN;
+    default:
+        return NONE;
     }
 }

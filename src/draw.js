@@ -115,7 +115,7 @@ export function drawerFunc(box, reload, btnInstall, fifteen, iconChanger, songCh
                 cell.style.transition = "transform " + animationTime + "ms linear";
             }
         }
-    }
+    };
 
     const animateGo = function (direction, startIndex) {
         if (!fifteen.canGo(direction, startIndex)) {
@@ -127,7 +127,7 @@ export function drawerFunc(box, reload, btnInstall, fifteen, iconChanger, songCh
                 startIndex,
                 direction,
                 false
-                );
+            );
         }
         return fifteen.bigGo(direction, startIndex);
     };
@@ -144,5 +144,5 @@ export function drawerFunc(box, reload, btnInstall, fifteen, iconChanger, songCh
         animateGo: animateGo,
         drawWithAnimation: drawWithAnimation,
         moveActiveElements: moveActiveElements
-    }
+    };
 }

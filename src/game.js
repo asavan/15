@@ -1,12 +1,12 @@
 "use strict"; // jshint ;_;
-import {initField, pointFromEvent, keyToDirection} from './helper.js'
-import iconChangerFunc from './icon_changer.js'
-import codeHandlerFunc from './secret_codes.js'
-import songChooserFunc from './vibro.js'
-import handleOrientationFunc from './orientation.js'
-import {drawerFunc} from './draw.js'
-import {getIndexDiff, logic, opositeDirection} from './logic.js'
-import {calculateDirection} from './core.js'
+import {initField, pointFromEvent, keyToDirection} from './helper.js';
+import iconChangerFunc from './icon_changer.js';
+import codeHandlerFunc from './secret_codes.js';
+import songChooserFunc from './vibro.js';
+import handleOrientationFunc from './orientation.js';
+import {drawerFunc} from './draw.js';
+import {getIndexDiff, logic, opositeDirection} from './logic.js';
+import {calculateDirection} from './core.js';
 
 export default function game(window, document, settings) {
 
@@ -79,7 +79,7 @@ export default function game(window, document, settings) {
     };
 
     const animateGoKeyboard = function (direction) {
-        return animateGo(direction, fifteen.getHolePosition() + getIndexDiff(direction))
+        return animateGo(direction, fifteen.getHolePosition() + getIndexDiff(direction));
     };
 
     function drawWithAnimation() {

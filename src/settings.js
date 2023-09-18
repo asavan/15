@@ -15,4 +15,4 @@ export default {
     useHorizontalOrientation: true,
     useVerticalOrientation: false,
     showInstall: true
-}
+};

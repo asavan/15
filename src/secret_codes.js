@@ -50,5 +50,5 @@ export default function codeHandler(settings, reinitGame) {
     return {
         addElem: addElem,
         execute: execute
-    }
-};
+    };
+}

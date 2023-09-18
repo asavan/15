@@ -9,6 +9,7 @@ function fromCache(request) {
     });
 }
 
+// eslint-disable-next-line no-unused-vars
 function precacheOld() {
     return caches.open(CACHE).then(function (cache) {
         return cache.addAll([

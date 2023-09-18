@@ -31,6 +31,8 @@ const directions = {
     DOWN: 3,
     RESTART: 4
 };
+
+// eslint-disable-next-line no-unused-vars
 const stateToKeyCodeMap_ = [37, 39, 38, 40, 84];
 const stateToKeysMap_ = ["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"];
 
@@ -39,10 +41,12 @@ const AXIS_THRESHOLD = .75;
 
 // A number of typical buttons recognized by Gamepad API and mapped to
 // standard controls. Any extraneous buttons will have larger indexes.
+// eslint-disable-next-line no-unused-vars
 const TYPICAL_BUTTON_COUNT = 16;
 
 // A number of typical axes recognized by Gamepad API and mapped to
 // standard controls. Any extraneous buttons will have larger indexes.
+// eslint-disable-next-line no-unused-vars
 const TYPICAL_AXIS_COUNT = 4;
 
 
@@ -152,7 +156,7 @@ const gamepadSupport = {
     /**
      * React to the gamepad being connected.
      */
-    onGamepadConnect: function (event) {
+    onGamepadConnect: function () {
         // Start the polling loop to monitor button changes.
         gamepadSupport.startPolling();
     },
@@ -160,7 +164,7 @@ const gamepadSupport = {
     /**
      * React to the gamepad being disconnected.
      */
-    onGamepadDisconnect: function (event) {
+    onGamepadDisconnect: function () {
         const gamepads = pollGamepads();
 
         // If no gamepads are left, stop the polling loop.
