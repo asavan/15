@@ -19,15 +19,6 @@ html, body {
 
 .box {
     margin-top: 10px;
-    /*display: table-cell;*/
-    /*vertical-align: middle;*/
-    /*margin-left: 5px;*/
-    /*margin-right: 5px;*/
-    /*display: grid;*/
-    /*grid-template-columns: 1fr 1fr 1fr 1fr;*/
-    /*place-items: center;*/
-    /*grid-gap: 5px;*/
-    /*justify-items: stretch;*/
 }
 
 .reload {
@@ -40,7 +31,7 @@ html, body {
     margin-top: 20px;
     background-color: var(--main-color);
     text-align: center;
-    font: bold 24px Tahoma, sans;
+    font: bold 24px Tahoma, sans-serif;
     line-height: var(--cell-size);
     height: var(--cell-size);
     cursor: pointer;
@@ -81,7 +72,7 @@ img {
     border: solid var(--border-size) gray;
     margin: var(--gap-size);
     text-align: center;
-    font: bold 24px Tahoma, sans;
+    font: 450 2.5rem Tahoma, sans-serif;
     line-height: var(--cell-size);
     border-radius: 10px;
     background-color: var(--main-color);
