@@ -86,7 +86,6 @@ img {
 }
 
 .hole {
-    /*visibility: hidden;*/
     border: solid var(--border-size) white;
     background-color: white;
     color: transparent;

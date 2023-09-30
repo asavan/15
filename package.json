@@ -6,16 +6,22 @@
   "description": "asavan 15 game",
   "scripts": {
     "start": "webpack serve --mode development",
-    "build": "webpack --mode production"
+    "build": "webpack --mode production",
+    "style": "npx eslint . && npx stylelint \"**/*.css\"",
+    "style:fix": "npx eslint . --fix && npx stylelint \"**/*.css\" --fix",
+    "updates": "npx ncu"
   },
   "devDependencies": {
     "copy-webpack-plugin": "^11.0.0",
     "css-loader": "^6.8.1",
     "css-minimizer-webpack-plugin": "^5.0.1",
+    "eslint": "^8.49.0",
     "html-inline-css-webpack-plugin": "^1.11.2",
     "html-webpack-plugin": "^5.5.3",
     "mini-css-extract-plugin": "^2.7.6",
     "npm-check-updates": "^16.14.4",
+    "stylelint": "^15.10.3",
+    "stylelint-config-standard": "^34.0.0",
     "terser-webpack-plugin": "^5.3.9",
     "webpack": "^5.88.2",
     "webpack-cli": "^5.1.4",

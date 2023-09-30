@@ -1,27 +1,27 @@
-import path from 'path';
-import os from 'os';
-import { fileURLToPath } from 'url';
+import path from "path";
+import os from "os";
+import { fileURLToPath } from "url";
 
-import HtmlWebpackPlugin from 'html-webpack-plugin';
-import MiniCssExtractPlugin from 'mini-css-extract-plugin';
-import CopyPlugin from 'copy-webpack-plugin';
-import webpack from 'webpack';
+import HtmlWebpackPlugin from "html-webpack-plugin";
+import MiniCssExtractPlugin from "mini-css-extract-plugin";
+import CopyPlugin from "copy-webpack-plugin";
+import webpack from "webpack";
 
 
-import TerserJSPlugin from 'terser-webpack-plugin';
-import CssMinimizerPlugin from 'css-minimizer-webpack-plugin';
-import {InjectManifest} from 'workbox-webpack-plugin';
+import TerserJSPlugin from "terser-webpack-plugin";
+import CssMinimizerPlugin from "css-minimizer-webpack-plugin";
+import {InjectManifest} from "workbox-webpack-plugin";
 
-import HTMLInlineCSSWebpackPlugin from 'html-inline-css-webpack-plugin';
+import HTMLInlineCSSWebpackPlugin from "html-inline-css-webpack-plugin";
 
 
 const getLocalExternalIP = () => [].concat(...Object.values(os.networkInterfaces()))
-    .filter(details => (details.family === 'IPv4' || details.family === 4) && !details.internal)
+    .filter(details => (details.family === "IPv4" || details.family === 4) && !details.internal)
     .pop()?.address;
 
 const webConfig = (env, argv) => {
-    const devMode = !argv || (argv.mode !== 'production');
-    let addr = getLocalExternalIP() || '0.0.0.0';
+    const devMode = !argv || (argv.mode !== "production");
+    let addr = getLocalExternalIP() || "0.0.0.0";
     const dirname = path.dirname(fileURLToPath(import.meta.url));
     return {
 
@@ -37,7 +37,7 @@ const webConfig = (env, argv) => {
                     test: /\.css$/i,
                     use: [{
                         loader: MiniCssExtractPlugin.loader
-                    }, 'css-loader'],
+                    }, "css-loader"],
                 }
             ]
         },
@@ -55,15 +55,15 @@ const webConfig = (env, argv) => {
             new HtmlWebpackPlugin({
                 template: "./src/index.html",
                 minify: false,
-                inject: 'head'
+                inject: "head"
             }),
             new MiniCssExtractPlugin({
-                filename: devMode ? '[name].css' : '[name].[contenthash].min.css'
+                filename: devMode ? "[name].css" : "[name].[contenthash].min.css"
             }),
             new HTMLInlineCSSWebpackPlugin.default(),
             ...(devMode ? [] : [new InjectManifest({
-                swDest: './sw.js',
-                swSrc: './src/sw.js',
+                swDest: "./sw.js",
+                swSrc: "./src/sw.js",
                 exclude: [
                     /index\.html$/,
                     /CNAME$/,
@@ -77,9 +77,9 @@ const webConfig = (env, argv) => {
             }),
             new CopyPlugin({
                 patterns: [
-                    { from: 'src/images/', to: './images/' },
-                    { from: 'src/manifest.json', to: './' },
-                    { from: 'github/', to: './' }
+                    { from: "src/images/", to: "./images/" },
+                    { from: "src/manifest.json", to: "./" },
+                    { from: "github/", to: "./" }
                 ],
             })
         ],

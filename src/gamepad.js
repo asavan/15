@@ -51,7 +51,7 @@ const TYPICAL_AXIS_COUNT = 4;
 
 
 const stickMoved_ = function (pad, axisId, negativeDirection) {
-    if (typeof pad.axes[axisId] === 'undefined') {
+    if (typeof pad.axes[axisId] === "undefined") {
         return false;
     } else if (negativeDirection) {
         return pad.axes[axisId] < -AXIS_THRESHOLD;
@@ -114,7 +114,7 @@ const updateDisplay = function (gamepad) {
         // console.log(gamepad.axes);
         return;
     }
-    const event = new KeyboardEvent('keydown', {"code":stateToKeysMap_[state]});
+    const event = new KeyboardEvent("keydown", {"code":stateToKeysMap_[state]});
     window.dispatchEvent(event);
 };
 
@@ -140,10 +140,10 @@ const gamepadSupport = {
             // Check and see if gamepadconnected/gamepaddisconnected is supported.
             // If so, listen for those events and don't start polling until a gamepad
             // has been connected.
-            if ('ongamepadconnected' in window) {
-                window.addEventListener('gamepadconnected',
+            if ("ongamepadconnected" in window) {
+                window.addEventListener("gamepadconnected",
                     gamepadSupport.onGamepadConnect, false);
-                window.addEventListener('gamepaddisconnected',
+                window.addEventListener("gamepaddisconnected",
                     gamepadSupport.onGamepadDisconnect, false);
             } else {
                 // If connection events are not supported just start polling

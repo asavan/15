@@ -1,12 +1,12 @@
 "use strict"; // jshint ;_;
-import {initField, pointFromEvent, keyToDirection} from './helper.js';
-import iconChangerFunc from './icon_changer.js';
-import codeHandlerFunc from './secret_codes.js';
-import songChooserFunc from './vibro.js';
-import handleOrientationFunc from './orientation.js';
-import {drawerFunc} from './draw.js';
-import {getIndexDiff, logic, opositeDirection} from './logic.js';
-import {calculateDirection} from './core.js';
+import {initField, pointFromEvent, keyToDirection} from "./helper.js";
+import iconChangerFunc from "./icon_changer.js";
+import codeHandlerFunc from "./secret_codes.js";
+import songChooserFunc from "./vibro.js";
+import handleOrientationFunc from "./orientation.js";
+import {drawerFunc} from "./draw.js";
+import {getIndexDiff, logic, opositeDirection} from "./logic.js";
+import {calculateDirection} from "./core.js";
 
 export default function game(window, document, settings) {
 
@@ -30,7 +30,7 @@ export default function game(window, document, settings) {
 
     const handleStart = function (evt) {
         evt.preventDefault();
-        if (!evt.target.classList.contains('cell') || activeCell) {
+        if (!evt.target.classList.contains("cell") || activeCell) {
             return;
         }
         activeCell = evt.target;
@@ -67,10 +67,10 @@ export default function game(window, document, settings) {
 
     const box = document.getElementsByClassName("box")[0]; // document.body.appendChild(document.createElement('div'));
     const reload = document.getElementsByClassName("reload")[0];
-    const btnInstall = document.getElementsByClassName('install')[0];
+    const btnInstall = document.getElementsByClassName("install")[0];
 
 
-    initField(16, 'cell', box, document);
+    initField(16, "cell", box, document);
     const iconChanger = iconChangerFunc(document);
     const drawer = drawerFunc(box, reload, btnInstall, fifteen, iconChanger, songChooser, settings);
 
@@ -147,8 +147,8 @@ export default function game(window, document, settings) {
     box.addEventListener("mousemove", drag, false);
 
 
-    window.addEventListener('keydown', onKeyPress);
-    window.addEventListener('deviceorientation', handleOrientation);
+    window.addEventListener("keydown", onKeyPress);
+    window.addEventListener("deviceorientation", handleOrientation);
 
     reload.addEventListener("click", reinitGameRandom, false);
     drawWithAnimation();

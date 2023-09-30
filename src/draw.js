@@ -72,9 +72,9 @@ function draw(box, fifteen, iconChanger, settings) {
         tile.style.transform = "";
         tile.style.transition = "";
         if (val) {
-            tile.className = 'cell';
+            tile.className = "cell";
         } else {
-            tile.className = 'cell hole';
+            tile.className = "cell hole";
         }
     }
     showCount(fifteen, iconChanger, settings);

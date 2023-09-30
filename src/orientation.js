@@ -1,5 +1,5 @@
 "use strict";
-import {LEFT, RIGHT, DOWN, UP} from './core.js';
+import {LEFT, RIGHT, DOWN, UP} from "./core.js";
 export default function handleOrientation(event, settings, drawWithAnimation, animateGo) {
     if (!settings.useHorizontalOrientation && !settings.useVerticalOrientation) {
         return;

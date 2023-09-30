@@ -2,9 +2,9 @@
 import {DOWN, LEFT, RIGHT, UP, NONE} from "./core.js";
 
 function install(window, document, settings) {
-    const btnAdd = document.getElementById('butInstall');
+    const btnAdd = document.getElementById("butInstall");
     let deferredPrompt;
-    btnAdd.addEventListener('click', (e) => {
+    btnAdd.addEventListener("click", (e) => {
         e.preventDefault();
         // hide our user interface that shows our A2HS button
         // btnAdd.setAttribute('disabled', true);
@@ -17,7 +17,7 @@ function install(window, document, settings) {
         });
     });
 
-    window.addEventListener('beforeinstallprompt', (e) => {
+    window.addEventListener("beforeinstallprompt", (e) => {
         // Prevent the mini-info bar from appearing.
         e.preventDefault();
         // Stash the event so it can be triggered later.
@@ -52,8 +52,8 @@ function starter(window, document, settings, f) {
     }
     // eslint-disable-next-line no-undef
     if (__USE_SERVICE_WORKERS__) {
-        if (settings.useServiceWorker && 'serviceWorker' in navigator) {
-            navigator.serviceWorker.register('./sw.js', {scope: './'});
+        if (settings.useServiceWorker && "serviceWorker" in navigator) {
+            navigator.serviceWorker.register("./sw.js", {scope: "./"});
             install(window, document, settings);
         }
     }
@@ -69,7 +69,7 @@ function starter(window, document, settings, f) {
 }
 
 function launch(f, window, document, settings, afterUrlParse) {
-    if (document.readyState !== 'loading') {
+    if (document.readyState !== "loading") {
         f(window, document, settings, afterUrlParse);
     } else {
         document.addEventListener("DOMContentLoaded", function () {
@@ -98,16 +98,16 @@ export function numAndDeclOfNum(number, titles) {
 
 export function initField(fieldSize, className, elem, document) {
     for (let i = 0; i < fieldSize; i++) {
-        const cell = document.createElement('div');
+        const cell = document.createElement("div");
         cell.className = className;
         elem.appendChild(cell);
     }
 }
 
 export function log(msg, document) {
-    let p = document.getElementById('log');
+    let p = document.getElementById("log");
     if (!p) {
-        p = document.body.appendChild(document.createElement('div'));
+        p = document.body.appendChild(document.createElement("div"));
         p.setAttribute("id", "log");
     }
     p.innerHTML = msg + "\n" + p.innerHTML;
