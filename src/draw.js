@@ -104,7 +104,7 @@ export function drawerFunc(box, reload, btnInstall, fifteen, iconChanger, songCh
     }
 
     const moveActiveElements = function (distX, distY, startIndex, dir, fast) {
-        for (let index of fifteen.getActiveElements(startIndex)) {
+        for (const index of fifteen.getActiveElements(startIndex)) {
             const cell = getCellByIndex(index, box);
             if (HORIZONTAL.includes(dir)) {
                 moveX(cell, distX, box, settings);

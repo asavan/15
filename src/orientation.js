@@ -22,7 +22,7 @@ export default function handleOrientation(event, settings, drawWithAnimation, an
             }
         }
     }
-    let x = event.beta;
+    const x = event.beta;
     if (settings.useVerticalOrientation) {
         if (x > 35) {
             for (let i = 0; i < 4; i += 1) {
