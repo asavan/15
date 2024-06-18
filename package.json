@@ -7,9 +7,12 @@
   "scripts": {
     "start": "webpack serve --mode development",
     "build": "webpack --mode production",
-    "style": "npx eslint . && npx stylelint \"**/*.css\"",
-    "style:fix": "npx eslint . --fix && npx stylelint \"**/*.css\" --fix",
-    "updates": "npx ncu"
+    "style": "npx eslint . -c linters/eslint.config.js",
+    "style:fix": "npx eslint . -c linters/eslint.config.js --fix",
+    "style2": "npx stylelint --config linters/.stylelintrc.json \"src/**/*.css\"",
+    "style2:fix": "npx stylelint --config linters/.stylelintrc.json \"src/**/*.css\" --fix",
+    "updates": "npx ncu",
+    "updates:fix": "npx ncu -u && npm install"
   },
   "devDependencies": {
     "copy-webpack-plugin": "^11.0.0",
