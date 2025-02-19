@@ -90,15 +90,15 @@ export function logic(settings) {
             hole = elems[i];
             res = true;
         }
-        if (res) ++movesCount;
+        if (res) {
+            ++movesCount;
+        }
         return res;
     };
 
     let hole = 15;
     const isCompleted = function () {
-        return !order.some(function (item, i) {
-            return item > 0 && item - 1 !== i;
-        });
+        return !order.some((item, i) => item > 0 && item - 1 !== i);
     };
 
     const canGo = function (dir, index) {

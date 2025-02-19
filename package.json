@@ -1,6 +1,6 @@
 {
   "name": "fifteenpuzzle",
-  "version": "1.1.19",
+  "version": "1.1.20",
   "private": true,
   "type": "module",
   "description": "asavan 15 game",
@@ -15,7 +15,7 @@
     "updates:fix": "npx ncu -u && npm install"
   },
   "devDependencies": {
-    "@stylistic/eslint-plugin-js": "^4.0.0",
+    "@stylistic/eslint-plugin-js": "^4.0.1",
     "copy-webpack-plugin": "^12.0.2",
     "css-loader": "^7.1.2",
     "css-minimizer-webpack-plugin": "^7.0.0",

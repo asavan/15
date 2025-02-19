@@ -14,6 +14,9 @@ import {InjectManifest} from "workbox-webpack-plugin";
 
 import HTMLInlineCSSWebpackPlugin from "html-inline-css-webpack-plugin";
 
+// import PACKAGE from "../package.json" with { type: "json" };
+import { createRequire } from "module";
+const PACKAGE = createRequire(import.meta.url)("./package.json");
 
 const getLocalExternalIP = () => [].concat(...Object.values(os.networkInterfaces()))
     .filter(details => (details.family === "IPv4" || details.family === 4) && !details.internal)
@@ -73,7 +76,8 @@ const webConfig = (env, argv) => {
                 ]
             })]),
             new webpack.DefinePlugin({
-                __USE_SERVICE_WORKERS__: !devMode
+                __USE_SERVICE_WORKERS__: !devMode,
+                __SERVICE_WORKER_VERSION__: JSON.stringify(PACKAGE.version)
             }),
             new CopyPlugin({
                 patterns: [

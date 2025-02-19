@@ -31,7 +31,7 @@ function install(window, document, settings) {
 }
 
 function stringToBoolean(string) {
-    switch (string.toLowerCase().trim()){
+    switch (string.toLowerCase().trim()) {
     case "true": case "yes": case "1": return true;
     case "false": case "no": case "0": case null: return false;
     default: return Boolean(string);
@@ -50,7 +50,7 @@ function starter(window, document, settings, f) {
             settings[key] = value;
         }
     }
-    // eslint-disable-next-line no-undef
+
     if (__USE_SERVICE_WORKERS__) {
         if (settings.useServiceWorker && "serviceWorker" in navigator) {
             navigator.serviceWorker.register("./sw.js", {scope: "./"});
@@ -59,7 +59,7 @@ function starter(window, document, settings, f) {
     }
     if (settings.useGamePad && navigator.getGamepads) {
         import("./gamepad.js").then(gamepad => {
-            setTimeout(function () {
+            setTimeout(() => {
                 gamepad.default.init();
             }, 500);
 
@@ -72,7 +72,7 @@ function launch(f, window, document, settings, afterUrlParse) {
     if (document.readyState !== "loading") {
         f(window, document, settings, afterUrlParse);
     } else {
-        document.addEventListener("DOMContentLoaded", function () {
+        document.addEventListener("DOMContentLoaded", () => {
             f(window, document, settings, afterUrlParse);
         });
     }
@@ -83,7 +83,9 @@ export function launchWithUrlParse(window, document, settings, afterUrlParse) {
 }
 
 export const playSound = (elem) => {
-    if (!elem) return;
+    if (!elem) {
+        return;
+    }
     elem.play();
 };
 
