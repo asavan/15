@@ -38,7 +38,7 @@ function stringToBoolean(string) {
     }
 }
 
-function starter(window, document, settings, f) {
+export function starter(window, document, settings, f) {
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
     for (const [key, value] of urlParams) {
@@ -68,52 +68,12 @@ function starter(window, document, settings, f) {
     f(window, document, settings);
 }
 
-function launch(f, window, document, settings, afterUrlParse) {
-    if (document.readyState !== "loading") {
-        f(window, document, settings, afterUrlParse);
-    } else {
-        document.addEventListener("DOMContentLoaded", () => {
-            f(window, document, settings, afterUrlParse);
-        });
-    }
-}
-
-export function launchWithUrlParse(window, document, settings, afterUrlParse) {
-    launch(starter, window, document, settings, afterUrlParse);
-}
-
-export const playSound = (elem) => {
-    if (!elem) {
-        return;
-    }
-    elem.play();
-};
-
-function declOfNum(number, titles) {
-    const cases = [2, 0, 1, 1, 1, 2];
-    return titles[(number % 100 > 4 && number % 100 < 20) ? 2 : cases[(number % 10 < 5) ? number % 10 : 5]];
-}
-
-export function numAndDeclOfNum(number, titles) {
-    return number + " " + declOfNum(number, titles);
-}
-
 export function initField(fieldSize, className, elem, document) {
     for (let i = 0; i < fieldSize; i++) {
         const cell = document.createElement("div");
         cell.className = className;
         elem.appendChild(cell);
     }
-}
-
-export function log(msg, document) {
-    let p = document.getElementById("log");
-    if (!p) {
-        p = document.body.appendChild(document.createElement("div"));
-        p.setAttribute("id", "log");
-    }
-    p.innerHTML = msg + "\n" + p.innerHTML;
-    console.log(msg);
 }
 
 function pointFromTouch(touch) {

@@ -1,36 +1,26 @@
 {
   "name": "fifteenpuzzle",
-  "version": "1.1.21",
+  "version": "1.2.0",
   "private": true,
   "type": "module",
   "description": "asavan 15 game",
   "scripts": {
-    "start": "webpack serve --mode development",
-    "build": "webpack --mode production",
+    "start": "webpack serve --config webpack_configs/webpack.config.js --mode development --color",
+    "android": "webpack --config webpack_configs/android.webpack.config.js --mode production",
+    "build": "webpack --config webpack_configs/production.webpack.config.js --mode production",
     "style": "npx eslint . -c linters/eslint.config.js",
     "style:fix": "npx eslint . -c linters/eslint.config.js --fix",
-    "style2": "npx stylelint --config linters/.stylelintrc.json \"src/**/*.css\"",
-    "style2:fix": "npx stylelint --config linters/.stylelintrc.json \"src/**/*.css\" --fix",
+    "style2": "npx stylelint --config linters/stylelint.config.js \"src/**/*.css\"",
+    "style2:fix": "npx stylelint --config linters/stylelint.config.js \"src/**/*.css\" --fix",
     "updates": "npx ncu",
     "updates:fix": "npx ncu -u && npm install"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/asavan/15.git"
+  },
+  "homepage": "https://asavan.github.io/15/",
   "devDependencies": {
-    "@stylistic/eslint-plugin-js": "^4.0.1",
-    "copy-webpack-plugin": "^12.0.2",
-    "css-loader": "^7.1.2",
-    "css-minimizer-webpack-plugin": "^7.0.0",
-    "eslint": "^9.21.0",
-    "globals": "^16.0.0",
-    "html-inline-css-webpack-plugin": "^1.11.2",
-    "html-webpack-plugin": "^5.6.3",
-    "mini-css-extract-plugin": "^2.9.2",
-    "npm-check-updates": "^17.1.15",
-    "stylelint": "^16.14.1",
-    "stylelint-config-standard": "^37.0.0",
-    "terser-webpack-plugin": "^5.3.11",
-    "webpack": "^5.98.0",
-    "webpack-cli": "^6.0.1",
-    "webpack-dev-server": "^5.2.0",
-    "workbox-webpack-plugin": "^7.3.0"
+    "devdeps": "github:asavan/dev-deps#v0.0.5"
   }
 }

@@ -1,8 +1,7 @@
 "use strict";
-import "./game.css";
 
 import settings from "./settings.js";
 import gameFunction from "./game.js";
-import {launchWithUrlParse} from "./helper.js";
+import {starter} from "./helper.js";
 
-launchWithUrlParse(window, document, settings, gameFunction);
+starter(window, document, settings, gameFunction);
