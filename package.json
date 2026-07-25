@@ -12,6 +12,7 @@
     "style:fix": "npx eslint . -c linters/eslint.config.js --fix",
     "style2": "npx stylelint --config linters/stylelint.config.js \"src/**/*.css\"",
     "style2:fix": "npx stylelint --config linters/stylelint.config.js \"src/**/*.css\" --fix",
+    "test": "node --test --test-reporter dot",
     "updates": "npx ncu",
     "updates:fix": "npx ncu -u && npm install && npm audit fix"
   },
