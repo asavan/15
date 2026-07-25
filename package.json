@@ -13,7 +13,7 @@
     "style2": "npx stylelint --config linters/stylelint.config.js \"src/**/*.css\"",
     "style2:fix": "npx stylelint --config linters/stylelint.config.js \"src/**/*.css\" --fix",
     "updates": "npx ncu",
-    "updates:fix": "npx ncu -u && npm install"
+    "updates:fix": "npx ncu -u && npm install && npm audit fix"
   },
   "repository": {
     "type": "git",
@@ -21,6 +21,6 @@
   },
   "homepage": "https://asavan.github.io/15/",
   "devDependencies": {
-    "devdeps": "github:asavan/dev-deps#v0.0.5"
+    "devdeps": "github:asavan/dev-deps#v0.0.17"
   }
 }
