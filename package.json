@@ -1,6 +1,6 @@
 {
   "name": "fifteenpuzzle",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "private": true,
   "type": "module",
   "description": "asavan 15 game",
@@ -22,6 +22,6 @@
   },
   "homepage": "https://asavan.github.io/15/",
   "devDependencies": {
-    "devdeps": "github:asavan/dev-deps#v0.0.17"
+    "devdeps": "github:asavan/dev-deps#v0.3.1"
   }
 }
